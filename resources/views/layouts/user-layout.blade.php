@@ -33,6 +33,9 @@
                 <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
                 <li><a href="#"><i class="fas fa-compass"></i> Découvrir</a></li>
                 <li><a href="#"><i class="fas fa-users"></i> Communauté</a></li>
+                @auth
+                    <li><a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Donations</a></li>
+                @endauth
                 <li class="dropdown">
                     <a href="#"><i class="fas fa-ellipsis-h"></i> Plus <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-content">
@@ -61,6 +64,7 @@
                         </div>
                         <div class="user-dropdown-content">
                             <a href="{{ route('profile.edit') }}"><i class="fas fa-user-circle"></i> Mon Profil</a>
+                            <a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Mes Donations</a>
                             <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
 
                             <!-- Item Admin Panel conditionnel avec Spatie Permission -->

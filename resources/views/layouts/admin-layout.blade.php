@@ -32,6 +32,12 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('admin.donations.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.donations.index') }}">
+                    <i class="fas fa-heart"></i>
+                    <span>Donations</span>
+                </a>
+            </li>
             <li class="#">
                 <a href="#">
                     <i class="fas fa-book"></i>
