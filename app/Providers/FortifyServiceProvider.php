@@ -23,6 +23,10 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ✅ On désactive les routes Fortify pour éviter les doublons avec Breeze
+        Fortify::ignoreRoutes();
+
+        // Tu peux garder les vues personnalisées si elles te servent
         Fortify::twoFactorChallengeView(fn () => view('livewire.auth.two-factor-challenge'));
         Fortify::confirmPasswordView(fn () => view('livewire.auth.confirm-password'));
 

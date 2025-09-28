@@ -1,0 +1,947 @@
+/* Variables pour le profil */
+:root {
+    --sidebar-width: 280px;
+    --sidebar-bg: #000000;
+    --sidebar-color: #ffffff;
+    --sidebar-hover: #333333;
+    --content-bg: #ffffff;
+    --border-color: #e0e0e0;
+}
+
+/* Container principal du profil */
+.profile-container {
+    min-height: calc(100vh - 200px);
+    padding: 40px 0;
+    background-color: var(--content-bg);
+}
+
+.profile-layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* Sidebar */
+.profile-sidebar {
+    background: var(--sidebar-bg);
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 100px;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 30px 20px;
+    text-align: center;
+    background: var(--sidebar-hover);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--content-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: var(--sidebar-bg);
+    font-size: 32px;
+    border: 3px solid var(--content-bg);
+}
+
+.sidebar-header h3 {
+    color: var(--sidebar-color);
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.sidebar-header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.sidebar-nav {
+    padding: 20px 0;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin: 0;
+}
+
+.nav-item a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 25px;
+    color: var(--sidebar-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-item a:hover {
+    background: var(--sidebar-hover);
+    border-left-color: var(--content-bg);
+}
+
+.nav-item.active a {
+    background: var(--sidebar-hover);
+    border-left-color: var(--content-bg);
+    font-weight: 600;
+}
+
+.nav-item i {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* Contenu principal */
+.profile-content {
+    background: var(--content-bg);
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    min-height: 600px;
+}
+
+.content-header {
+    padding: 30px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--content-bg);
+    border-radius: 12px 12px 0 0;
+}
+
+.content-header h1 {
+    color: #000000;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #666666;
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb i {
+    font-size: 10px;
+    opacity: 0.6;
+}
+
+.content-body {
+    padding: 30px;
+}
+
+/* Sections du profil */
+.profile-section {
+    margin-bottom: 40px;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #000000;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.section-header p {
+    color: #666666;
+    font-size: 1rem;
+}
+
+/* Cartes de contenu */
+.profile-card {
+    background: var(--content-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Styles pour les formulaires Breeze */
+.max-w-xl {
+    max-width: 100% !important;
+}
+
+.bg-white {
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+.p-4, .p-8 {
+    padding: 0 !important;
+}
+
+.space-y-6 > * + * {
+    margin-top: 0 !important;
+}
+
+/* Adaptation des formulaires */
+.profile-card .max-w-xl {
+    width: 100%;
+}
+
+.profile-card .py-12 {
+    padding: 0 !important;
+}
+
+.profile-card .sm\\:rounded-lg {
+    border-radius: 0 !important;
+}
+
+.profile-card .shadow {
+    box-shadow: none !important;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .profile-sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 20px 0;
+    }
+
+    .content-header,
+    .content-body {
+        padding: 20px;
+    }
+
+    .sidebar-header {
+        padding: 20px 15px;
+    }
+
+    .nav-item a {
+        padding: 12px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .profile-card {
+        padding: 20px;
+    }
+}
+/* Styles spécifiques pour les formulaires Breeze */
+.profile-card form {
+    width: 100%;
+}
+
+/* Groupes de formulaire */
+.profile-card .space-y-6 {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Champs de formulaire */
+.profile-card .mt-4 {
+    margin-top: 0 !important;
+}
+
+.profile-card .block {
+    display: block;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.profile-card label {
+    display: block;
+    margin-bottom: 8px;
+    color: #000000;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.profile-card input[type="text"],
+.profile-card input[type="email"],
+.profile-card input[type="password"],
+.profile-card input[type="tel"],
+.profile-card textarea,
+.profile-card select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #ffffff;
+    color: #000000;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.profile-card input[type="text"]:focus,
+.profile-card input[type="email"]:focus,
+.profile-card input[type="password"]:focus,
+.profile-card input[type="tel"]:focus,
+.profile-card textarea:focus,
+.profile-card select:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Messages d'erreur et de succès */
+.profile-card .text-sm {
+    font-size: 0.875rem;
+    margin-top: 5px;
+}
+
+.profile-card .text-red-600 {
+    color: #dc2626;
+}
+
+.profile-card .text-gray-600 {
+    color: #666666;
+}
+
+.profile-card .text-green-600 {
+    color: #16a34a;
+}
+
+/* Boutons */
+.profile-card button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.profile-card button:hover {
+    background-color: #333333;
+    border-color: #333333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.profile-card .bg-red-600 {
+    background-color: #dc2626;
+    border-color: #dc2626;
+}
+
+.profile-card .bg-red-600:hover {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
+}
+
+/* Alertes et messages */
+.profile-card .bg-red-100 {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.profile-card .bg-green-100 {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.profile-card .text-red-800 {
+    color: #991b1b;
+}
+
+.profile-card .text-green-800 {
+    color: #166534;
+}
+
+/* Section de suppression de compte */
+.profile-card .bg-white {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px !important;
+}
+
+.profile-card .border-t {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+/* Champs avec icônes */
+.profile-card .relative {
+    position: relative;
+}
+
+.profile-card .absolute {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666666;
+}
+
+/* Checkbox et radio */
+.profile-card input[type="checkbox"],
+.profile-card input[type="radio"] {
+    margin-right: 8px;
+    transform: scale(1.1);
+}
+
+/* Textarea */
+.profile-card textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+/* États désactivés */
+.profile-card input:disabled,
+.profile-card button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.profile-card button:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Focus visible pour l'accessibilité */
+.profile-card input:focus-visible,
+.profile-card button:focus-visible {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+}
+
+/* Styles spécifiques pour les sections */
+#delete-account .profile-card {
+    border-left: 4px solid #dc2626;
+}
+
+#password .profile-card {
+    border-left: 4px solid #000000;
+}
+
+#profile-info .profile-card {
+    border-left: 4px solid #000000;
+}
+
+/* Animation pour les changements d'état */
+.profile-card input:invalid {
+    border-color: #dc2626;
+}
+
+.profile-card input:valid {
+    border-color: #16a34a;
+}
+
+/* Placeholder stylisé */
+.profile-card input::placeholder {
+    color: #999999;
+    opacity: 1;
+}
+
+.profile-card textarea::placeholder {
+    color: #999999;
+    opacity: 1;
+}
+
+/* Responsive pour les formulaires */
+@media (max-width: 768px) {
+    .profile-card {
+        padding: 20px;
+    }
+
+    .profile-card input[type="text"],
+    .profile-card input[type="email"],
+    .profile-card input[type="password"],
+    .profile-card input[type="tel"],
+    .profile-card textarea,
+    .profile-card select {
+        padding: 10px 12px;
+        font-size: 16px; /* Évite le zoom sur iOS */
+    }
+
+    .profile-card button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .profile-card .flex {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-card .flex button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-card {
+        padding: 15px;
+    }
+
+    .profile-card .bg-red-100,
+    .profile-card .bg-green-100 {
+        padding: 12px;
+    }
+}
+
+/* Animation de chargement */
+.profile-card button:disabled::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Transition pour les changements d'état */
+.profile-card * {
+    transition: all 0.2s ease-in-out;
+}
+/* Styles pour le modal de suppression Breeze */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.close {
+    color: #ffffff;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #cccccc;
+}
+
+/* Boutons du modal */
+.modal-footer .btn-secondary {
+    background-color: #666666;
+    border-color: #666666;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #555555;
+    border-color: #555555;
+}
+
+.modal-footer .btn-danger {
+    background-color: #dc2626;
+    border-color: #dc2626;
+}
+
+.modal-footer .btn-danger:hover {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
+}
+/* Styles pour les composants Breeze Alpine.js */
+
+/* Modal Breeze */
+[x-cloak] { display: none !important; }
+
+/* Modal backdrop */
+.fixed.inset-0 {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+}
+
+/* Modal container */
+.fixed.inset-0.z-10 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Modal content */
+.relative.bg-white {
+    background: #ffffff !important;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    margin: 0;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Modal header implicite */
+.p-6:first-child {
+    background: #000000;
+    color: #ffffff;
+    border-radius: 12px 12px 0 0;
+    padding: 20px 24px !important;
+}
+
+.p-6:first-child h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #ffffff;
+}
+
+/* Boutons Breeze */
+.bg-red-600 {
+    background-color: #dc2626 !important;
+    border: 2px solid #dc2626 !important;
+    color: #ffffff !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.bg-red-600:hover {
+    background-color: #b91c1c !important;
+    border-color: #b91c1c !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+}
+
+.bg-gray-800 {
+    background-color: #666666 !important;
+    border: 2px solid #666666 !important;
+    color: #ffffff !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+.bg-gray-800:hover {
+    background-color: #555555 !important;
+    border-color: #555555 !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Inputs Breeze */
+.mt-1.block.w-3\\4 {
+    width: 100% !important;
+    padding: 12px 15px !important;
+    border: 2px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    font-size: 1rem !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+}
+
+.mt-1.block.w-3\\4:focus {
+                       outline: none !important;
+                       border-color: #000000 !important;
+                       box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
+                   }
+
+/* Labels */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Messages d'erreur */
+.text-sm.text-red-600 {
+    color: #dc2626 !important;
+    font-size: 0.875rem !important;
+    margin-top: 5px !important;
+    display: block !important;
+}
+
+/* Flex container pour les boutons */
+.flex.justify-end {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 12px !important;
+    margin-top: 20px !important;
+    padding-top: 20px !important;
+    border-top: 1px solid #e0e0e0 !important;
+}
+
+/* Text colors */
+.text-gray-900 {
+    color: #000000 !important;
+}
+
+.text-gray-600 {
+    color: #666666 !important;
+}
+
+.text-lg {
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+}
+
+.text-sm {
+    font-size: 0.875rem !important;
+}
+
+/* Espacements */
+.mt-1 {
+    margin-top: 0.25rem !important;
+}
+
+.mt-6 {
+    margin-top: 1.5rem !important;
+}
+
+.ms-3 {
+    margin-left: 0.75rem !important;
+}
+
+.p-6 {
+    padding: 1.5rem !important;
+}
+
+.space-y-6 > * + * {
+    margin-top: 1.5rem !important;
+}
+
+/* Responsive pour le modal */
+@media (max-width: 640px) {
+    .fixed.inset-0.z-10 {
+        padding: 10px;
+        align-items: flex-end;
+    }
+
+    .relative.bg-white {
+        max-width: 100%;
+        border-radius: 12px 12px 0 0;
+        margin-bottom: 0;
+    }
+
+    .flex.justify-end {
+        flex-direction: column-reverse;
+    }
+
+    .ms-3 {
+        margin-left: 0 !important;
+        margin-bottom: 12px;
+    }
+}
+
+/* Animation de fermeture du modal */
+.fixed.inset-0.z-10 {
+    transition: opacity 0.3s ease;
+}
+
+.relative.bg-white {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* État fermé */
+.fixed.inset-0.z-10[style*="display: none"] {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fixed.inset-0.z-10[style*="display: none"] .relative.bg-white {
+    transform: translateY(-50px) scale(0.95);
+    opacity: 0;
+}
+
+/* Modal vanilla */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.close {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #cccccc;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}

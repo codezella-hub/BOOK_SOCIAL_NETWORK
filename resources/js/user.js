@@ -206,4 +206,53 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Gestion du menu déroulant utilisateur - CORRECTION
+    const userDropdown = document.querySelector('.user-dropdown');
+    const userAvatar = document.querySelector('.user-avatar');
+
+    if (userDropdown && userAvatar) {
+        let closeTimeout;
+
+        // Ouvrir/fermer le menu au clic sur l'avatar
+        userAvatar.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+
+            // Annuler tout timeout en cours
+            clearTimeout(closeTimeout);
+        });
+
+        // Garder le menu ouvert lors du survol
+        userDropdown.addEventListener('mouseenter', function() {
+            clearTimeout(closeTimeout);
+            userDropdown.classList.add('active');
+        });
+
+        userDropdown.addEventListener('mouseleave', function(e) {
+            // Délai avant de fermer pour permettre à l'utilisateur de passer à l'élément suivant
+            closeTimeout = setTimeout(() => {
+                if (!userDropdown.matches(':hover')) {
+                    userDropdown.classList.remove('active');
+                }
+            }, 300);
+        });
+
+        // Fermer le menu en cliquant ailleurs
+        document.addEventListener('click', function(e) {
+            if (!userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('active');
+            }
+        });
+
+        // Empêcher la fermeture lors du clic sur les liens du menu
+        const dropdownLinks = document.querySelectorAll('.user-dropdown-content a');
+        dropdownLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Optionnel: fermer le menu après le clic
+                // userDropdown.classList.remove('active');
+            });
+        });
+    }
 });

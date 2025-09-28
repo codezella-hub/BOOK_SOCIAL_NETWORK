@@ -139,18 +139,24 @@
 
                     <!-- User Dropdown Menu -->
                     <div class="user-dropdown" id="userDropdown">
-                        <div class="user-dropdown-item">
-                            <i class="fas fa-user"></i>
-                            <span>Profile</span>
-                        </div>
-                        <div class="user-dropdown-item">
+
+                        <a href="#" class="user-dropdown-item">
                             <i class="fas fa-cog"></i>
-                            <span>Settings</span>
-                        </div>
-                        <div class="user-dropdown-item logout">
+                            <span>Paramètres</span>
+                        </a>
+
+
+
+                        <a href="{{ route('logout') }}"
+                           class="user-dropdown-item logout"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </div>
+                            <span>Déconnexion</span>
+                        </a>
+
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
                     </div>
                 </div>
             </div>

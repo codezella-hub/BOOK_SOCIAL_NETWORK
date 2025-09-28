@@ -603,3 +603,8 @@ textarea.form-control {
         right: -30px;
     }
 }
+
+a {
+    text-decoration: none;
+}
+

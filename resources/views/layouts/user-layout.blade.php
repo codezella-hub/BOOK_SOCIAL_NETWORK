@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @vite(['resources/css/user.css'])
     <!-- CSS Section -->
-
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @yield('styles')
 </head>
 <body>
@@ -46,21 +47,46 @@
                 <div class="icon-btn" id="search-btn">
                     <i class="fas fa-search"></i>
                 </div>
-                <div class="icon-btn" id="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </div>
 
-                <div class="user-dropdown">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
+
+                @auth
+                    <div class="icon-btn" id="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
                     </div>
-                    <div class="user-dropdown-content">
-                        <a href="#"><i class="fas fa-user-circle"></i> Mon Profil</a>
-                        <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
-                        <a href="#"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                    <!-- Utilisateur connecté - Afficher l'avatar et le menu déroulant -->
+                    <div class="user-dropdown">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-dropdown-content">
+                            <a href="{{ route('profile.edit') }}"><i class="fas fa-user-circle"></i> Mon Profil</a>
+                            <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
+
+                            <!-- Item Admin Panel conditionnel avec Spatie Permission -->
+                            @if(auth()->user()->hasRole('admin'))
+                                <a href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Admin Panel</a>
+                            @endif
+
+                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt"></i> Déconnexion
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <!-- Utilisateur non connecté - Afficher le bouton login -->
+                    <div class="auth-buttons">
+                        <a href="{{ route('login') }}" class="btn btn-outline login-btn">
+                            <i class="fas fa-sign-in-alt"></i> Connexion
+                        </a>
+                        <a href="{{ route('register') }}" class="btn" style="margin-left: 10px;">
+                            <i class="fas fa-user-plus"></i> Inscription
+                        </a>
+                    </div>
+                @endauth
             </div>
             <div class="menu-toggle">
                 <i class="fas fa-bars"></i>
