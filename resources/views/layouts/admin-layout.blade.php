@@ -24,6 +24,8 @@
             <!-- Logo Social Book Network -->
             <span>Admin Panel</span>
         </div>
+        <!-- Dans votre sidebar, remplacez une des sections par : -->
+
 
         <ul class="admin-menu">
             <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -62,10 +64,10 @@
                     <span>Analytics</span>
                 </a>
             </li>
-            <li class="#">
-                <a href="#">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+            <li class="{{ request()->routeIs('admin.quiz.*') ? 'active' : '' }}">
+    <a href="{{ route('admin.quiz.index') }}">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Quiz</span>
                 </a>
             </li>
             <li>
