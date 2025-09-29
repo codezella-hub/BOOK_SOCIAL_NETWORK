@@ -14,6 +14,9 @@
 
     <!-- CSS Section -->
     @vite(['resources/css/admin.css'])
+    <style>
+    </style>
+    
     @yield('styles')
 </head>
 <body>
@@ -48,6 +51,12 @@
                 <a href="#">
                     <i class="fas fa-users"></i>
                     <span>Users</span>
+                </a>
+            </li>
+            <li class="{{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.topics.index') }}">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum Management</span>
                 </a>
             </li>
             <li class="#">
