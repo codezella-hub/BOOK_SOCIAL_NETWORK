@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Social Book Network - Partagez votre passion pour la lecture')</title>
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    @vite(['resources/css/user.css'])
+
     <!-- CSS Section -->
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @vite(['resources/css/user.css'])
+    <style>
+
+</style>
+    @stack('styles')
 
     @yield('styles')
 </head>
@@ -29,13 +37,27 @@
                 SocialBook
             </div>
             <ul class="nav-links">
-                <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-                <li><a href="#"><i class="fas fa-compass"></i> Découvrir</a></li>
+                <li><a href="{{ route('user.home') }}"><i class="fas fa-home"></i> Accueil</a></li>
+
+                <li><a href="{{ route('books.index') }}"><i class="fas fa-compass"></i> Découvrir</a></li>
+
+
+
+                <li><a href="{{ route('user.posts.index') }}"><i class="fas fa-comments"></i> Forum</a></li>
+
                 <li><a href="#"><i class="fas fa-users"></i> Communauté</a></li>
+                @auth
+                    <li><a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Donations</a></li>
+                @endauth
                 <li class="dropdown">
                     <a href="#"><i class="fas fa-ellipsis-h"></i> Plus <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-content">
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
+                        @auth
+                        <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
+                       <a href="{{ route('user.quiz.index') }}"><i class="fas fa-book"></i> Quiz</a>
+                        @endauth
+
                         <a href="#"><i class="fas fa-calendar-alt"></i> Événements</a>
                         <a href="#"><i class="fas fa-question-circle"></i> Aide</a>
                         <a href="#"><i class="fas fa-info-circle"></i> À propos</a>
@@ -46,21 +68,47 @@
                 <div class="icon-btn" id="search-btn">
                     <i class="fas fa-search"></i>
                 </div>
-                <div class="icon-btn" id="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </div>
 
-                <div class="user-dropdown">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
+
+                @auth
+                    <div class="icon-btn" id="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
                     </div>
-                    <div class="user-dropdown-content">
-                        <a href="#"><i class="fas fa-user-circle"></i> Mon Profil</a>
-                        <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
-                        <a href="#"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                    <!-- Utilisateur connecté - Afficher l'avatar et le menu déroulant -->
+                    <div class="user-dropdown">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-dropdown-content">
+                            <a href="{{ route('profile.edit') }}"><i class="fas fa-user-circle"></i> Mon Profil</a>
+                            <a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Mes Donations</a>
+                            <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
+
+                            <!-- Item Admin Panel conditionnel avec Spatie Permission -->
+                            @if(auth()->user()->hasRole('admin'))
+                                <a href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Admin Panel</a>
+                            @endif
+
+                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt"></i> Déconnexion
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <!-- Utilisateur non connecté - Afficher le bouton login -->
+                    <div class="auth-buttons">
+                        <a href="{{ route('login') }}" class="btn btn-outline login-btn">
+                            <i class="fas fa-sign-in-alt"></i> Connexion
+                        </a>
+                        <a href="{{ route('register') }}" class="btn" style="margin-left: 10px;">
+                            <i class="fas fa-user-plus"></i> Inscription
+                        </a>
+                    </div>
+                @endauth
             </div>
             <div class="menu-toggle">
                 <i class="fas fa-bars"></i>
@@ -140,7 +188,9 @@
 </div>
 
 <!-- Main Content Section -->
-@yield('content')
+<main>
+    @yield('content')
+</main>
 
 <!-- Footer -->
 <footer>
@@ -161,9 +211,9 @@
                 <ul>
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Accueil</a></li>
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Découvrir</a></li>
+                    <li><a href="{{ route('user.posts.index') }}"><i class="fas fa-chevron-right"></i> Forum</a></li>
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Communauté</a></li>
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Blog</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> À propos</a></li>
                 </ul>
             </div>
             <div class="footer-column">
@@ -194,6 +244,10 @@
 <!-- JavaScript Section -->
 @vite(['resources/js/user.js'])
 
+<script>
+</script>
+
+@stack('scripts')
 @yield('scripts')
 </body>
 </html>

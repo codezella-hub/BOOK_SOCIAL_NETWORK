@@ -1,0 +1,16 @@
+@extends('layouts.user')
+
+@section('title', 'Books Management')
+
+
+@section('content')
+<!-- Votre contenu spécifique ici -->
+@endsection
+
+@section('styles')
+<!-- CSS additionnel si nécessaire -->
+@endsection
+
+@section('scripts')
+<!-- JS additionnel si nécessaire -->
+@endsection

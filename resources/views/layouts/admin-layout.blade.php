@@ -14,6 +14,9 @@
 
     <!-- CSS Section -->
     @vite(['resources/css/admin.css'])
+    <style>
+    </style>
+
     @yield('styles')
 </head>
 <body>
@@ -34,6 +37,12 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('admin.donations.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.donations.index') }}">
+                    <i class="fas fa-heart"></i>
+                    <span>Donations</span>
+                </a>
+            </li>
             <li class="#">
                 <a href="#">
                     <i class="fas fa-book"></i>
@@ -46,10 +55,30 @@
                     <span>Users</span>
                 </a>
             </li>
+
+            <li class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.categories.index') }}">
+                    <i class="fas fa-tags"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+            <!-- Dans admin.blade.php -->
+            <li class="{{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.books.index') }}">
+                    <i class="fas fa-book"></i>
+                    <span>Books</span>
+                </a>
+            <li class="{{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.topics.index') }}">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum Management</span>
+                </a>
+            </li>
             <li class="#">
                 <a href="#">
                     <i class="fas fa-comments"></i>
                     <span>Reviews</span>
+
                 </a>
             </li>
             <li class="#">
@@ -76,7 +105,7 @@
                     <span>Back to Site</span>
                 </a>
             </li>
-        </ul>
+          </ul>
     </div>
 
     <!-- Main Content -->
@@ -141,18 +170,24 @@
 
                     <!-- User Dropdown Menu -->
                     <div class="user-dropdown" id="userDropdown">
-                        <div class="user-dropdown-item">
-                            <i class="fas fa-user"></i>
-                            <span>Profile</span>
-                        </div>
-                        <div class="user-dropdown-item">
+
+                        <a href="#" class="user-dropdown-item">
                             <i class="fas fa-cog"></i>
-                            <span>Settings</span>
-                        </div>
-                        <div class="user-dropdown-item logout">
+                            <span>Paramètres</span>
+                        </a>
+
+
+
+                        <a href="{{ route('logout') }}"
+                           class="user-dropdown-item logout"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </div>
+                            <span>Déconnexion</span>
+                        </a>
+
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
                     </div>
                 </div>
             </div>

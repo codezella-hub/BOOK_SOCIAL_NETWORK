@@ -1,0 +1,36 @@
+php artisan db:create   // cree base donner
+
+ php artisan migrate    // cree les tables
+
+
+ php artisan db:seed --class=AdminUserSeeder // cree un admin
+  Email: admin@socialbook.net
+  Mot de passe: Admin123!
+
+
+recupperer role et user id in blade
+
+{{-- Vérifier un rôle spécifique --}}
+@if(auth()->user()->hasRole('admin'))
+    Utilisateur est administrateur
+@endif
+
+{{-- Afficher tous les rôles --}}
+{{ auth()->user()->getRoleNames() }}
+
+{{ auth()->user()->id }}  // id
+
+// link images
+
+php artisan storage:link
+
+
+reccuperer en controller
+   // Récupérer l'utilisateur connecté
+        $user = Auth::user();
+
+
+        // Récupérer les rôles (avec Spatie Permission)
+                $roles = $user->getRoleNames(); // Collection des noms de rôles
+                $firstRole = $user->getRoleNames()->first();
+                $hasAdminRole = $user->hasRole('admin');

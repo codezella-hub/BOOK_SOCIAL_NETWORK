@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Donation;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable, TwoFactorAuthenticatable,HasRoles;
 
     protected $fillable = [
         'name',
@@ -81,4 +86,58 @@ class User extends Authenticatable
             'best_score' => $this->quizResults()->max('percentage'),
         ];
     }
+    /**
+     * Get the donations made by this user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Donation>
+     */
+    public function donations(): HasMany
+    {
+        return $this->hasMany(Donation::class);
+    }
+
+    /**
+     * Get the donations approved by this admin
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Donation>
+     */
+    public function approvedDonations(): HasMany
+    {
+        return $this->hasMany(Donation::class, 'approved_by');
+    }
+
+
+    public function books()
+    {
+        return $this->hasMany(Book::class);
+    }
+
+
+
+    //User create many posts
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'created_by');
+    }
+
+    //User create many comments
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'created_by');
+    }
+
+    //User give many likes
+    public function likes()
+    {
+        return $this->hasMany(Like::class, 'liked_by');
+    }
+
+    //User make many reports
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'reported_by');
+    }
+
+
+
 }
