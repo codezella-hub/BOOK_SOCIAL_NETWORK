@@ -41,17 +41,104 @@
         <div class="feature-desc">{!! nl2br(e($event->description)) !!}</div>
       @endif
 
-      <div class="feature-stats">
-        <span><strong>Going:</strong> {{ $goingCount }}</span>
-        <span><strong>Interested:</strong> {{ $interestedCount }}</span>
-        @if(!is_null($event->capacity))
-          <span><strong>Remaining:</strong> {{ $event->capacity_remaining }}</span>
-        @endif
-      </div>
+      {{-- Modern metrics --}}
+      @php
+        $lowRemaining = !is_null($event->capacity) && $event->capacity_remaining <= 10;
+      @endphp
+      <ul class="event-metrics" role="list">
+        <li class="metric ok" title="Going">
+          <svg class="m-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-width="2" stroke-linecap="round" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span class="m-label">Going</span>
+          <span class="m-val">{{ $goingCount }}</span>
+        </li>
 
+        <li class="metric info" title="Interested">
+          <svg class="m-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-width="2" stroke-linecap="round" d="M12 8v4m0 4h.01"/>
+            <circle cx="12" cy="12" r="9" stroke-width="2"/>
+          </svg>
+          <span class="m-label">Interested</span>
+          <span class="m-val">{{ $interestedCount }}</span>
+        </li>
+
+        @if(!is_null($event->capacity))
+          <li class="metric cap {{ $lowRemaining ? 'is-low' : '' }}" title="Remaining seats">
+            <svg class="m-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-width="2" stroke-linecap="round" d="M3 7h18M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2m-1 5v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-6h10z"/>
+            </svg>
+            <span class="m-label">Remaining</span>
+            <span class="m-val">{{ $event->capacity_remaining }}</span>
+          </li>
+        @endif
+      </ul>
+
+      {{-- RSVP actions --}}
       <div class="feature-actions">
         @auth
-          @include('events.partials._rsvp', ['event'=>$event, 'userStatus'=>$userStatus, 'ticket'=>$ticket])
+          @php
+            // $userStatus: 'going'|'interested'|'uninterested'|null
+          @endphp
+          <div class="rsvp-wrap">
+            <div class="rsvp-bar" role="group" aria-label="RSVP actions">
+              <form method="POST" action="{{ route('events.rsvp', $event) }}">
+                @csrf
+                <input type="hidden" name="status" value="going">
+                <button type="submit"
+                        class="rsvp-btn {{ $userStatus==='going' ? 'is-active ok' : 'ok' }}"
+                        aria-pressed="{{ $userStatus==='going' ? 'true' : 'false' }}">
+                  <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-width="2" stroke-linecap="round" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  I’m Going
+                </button>
+              </form>
+
+              <form method="POST" action="{{ route('events.rsvp', $event) }}">
+                @csrf
+                <input type="hidden" name="status" value="interested">
+                <button type="submit"
+                        class="rsvp-btn {{ $userStatus==='interested' ? 'is-active info' : 'info' }}"
+                        aria-pressed="{{ $userStatus==='interested' ? 'true' : 'false' }}">
+                  <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-width="2" stroke-linecap="round" d="M12 8v4m0 4h.01"/>
+                    <circle cx="12" cy="12" r="9" stroke-width="2"/>
+                  </svg>
+                  Interested
+                </button>
+              </form>
+
+              <form method="POST" action="{{ route('events.rsvp', $event) }}">
+                @csrf
+                <input type="hidden" name="status" value="uninterested">
+                <button type="submit"
+                        class="rsvp-btn {{ $userStatus==='uninterested' ? 'is-active muted' : 'muted' }}"
+                        aria-pressed="{{ $userStatus==='uninterested' ? 'true' : 'false' }}">
+                  <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-width="2" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                  Uninterested
+                </button>
+              </form>
+
+              @if($userStatus === 'going' && $ticket)
+                <a href="{{ route('tickets.download', [$event, $ticket]) }}" class="rsvp-btn dark" title="Download ticket">
+                  <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-width="2" stroke-linecap="round" d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/>
+                  </svg>
+                  Download Ticket
+                </a>
+              @endif
+            </div>
+
+            @if ($errors->any())
+              <div class="rsvp-msg err" role="alert">{{ $errors->first() }}</div>
+            @endif
+            @if (session('status'))
+              <div class="rsvp-msg ok-msg" role="status">{{ session('status') }}</div>
+            @endif
+          </div>
         @else
           <a class="cta" href="{{ route('login') }}">Log in to RSVP</a>
         @endauth
@@ -115,10 +202,71 @@
   .icon { width: 18px; height: 18px; color: #6b7280; }
   .feature-summary { margin: .5rem 0 0; font-size: 1.05rem; color: #374151; }
   .feature-desc { margin-top: .75rem; color: #111827; line-height: 1.6; }
-  .feature-stats { margin-top: 1rem; display: flex; gap: 1.25rem; color: #374151; }
+
+  /* Metrics row */
+  .event-metrics{
+    display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; margin-top:.75rem;
+    padding: .25rem 0;
+  }
+  .metric{
+    display:inline-flex; align-items:center; gap:.45rem;
+    background:#f8fafc; border:1px solid #e5e7eb; color:#374151;
+    padding:.35rem .6rem; border-radius:999px; font-size:.875rem; font-weight:700;
+  }
+  .metric .m-label{ font-weight:600; }
+/* Compact number badge for metrics */
+.metric .m-val{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:0 .25rem;
+  font-size:.8rem;
+  line-height:1;
+}
+.metric{ background:#fafafa; }
+.metric.ok{ background:#f0fdf4; }    /* even lighter green */
+.metric.info{ background:#f5f7ff; }  /* even lighter indigo */
+.metric.cap{ background:#fffaf0; }   /* lighter amber */
+
+  .m-ico{ width:16px; height:16px; }
+
+  .metric.ok{ background:#ecfdf5; border-color:#d1fae5; color:#047857; }
+  .metric.info{ background:#eef2ff; border-color:#c7d2fe; color:#3730a3; }
+  .metric.cap{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+  .metric.cap.is-low{ background:#fef2f2; border-color:#fecaca; color:#b91c1c; }
+
+  /* RSVP */
   .feature-actions { margin-top: 1rem; }
-  .cta { display: inline-block; background: #1b1b18; color: #fff; padding: .55rem .9rem; border-radius: .4rem; text-decoration: none; font-weight: 600; }
-  .cta:hover { background: #000; }
+  .rsvp-wrap { display:grid; gap:.5rem; }
+  .rsvp-bar { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+  .rsvp-btn{
+    display:inline-flex; align-items:center; gap:.5rem;
+    padding:.55rem .9rem; border-radius:999px; border:1px solid #e5e7eb;
+    background:#fff; color:#111827; font-weight:700; font-size:.9rem;
+    transition: transform .05s ease, background .2s, border-color .2s, color .2s, box-shadow .2s;
+    cursor:pointer; text-decoration:none;
+  }
+  .rsvp-btn:hover{ transform: translateY(-1px); }
+  .rsvp-btn.is-active{ box-shadow:0 6px 16px rgba(5,7,9,.08); }
+
+  .rsvp-btn.ok{ background:#ecfdf5; border-color:#d1fae5; color:#047857; }
+  .rsvp-btn.ok:hover{ background:#d1fae5; }
+  .rsvp-btn.info{ background:#eef2ff; border-color:#c7d2fe; color:#3730a3; }
+  .rsvp-btn.info:hover{ background:#e0e7ff; }
+  .rsvp-btn.muted{ background:#f3f4f6; border-color:#e5e7eb; color:#374151; }
+  .rsvp-btn.muted:hover{ background:#e5e7eb; }
+  .rsvp-btn.dark{ background:#1b1b18; border-color:#1b1b18; color:#fff; }
+  .rsvp-btn.dark:hover{ background:#000; }
+  .ico{ width:16px; height:16px; }
+
+  .rsvp-msg{ font-size:.9rem; padding:.35rem .6rem; border-radius:.5rem; display:inline-block; }
+  .rsvp-msg.err{ background:#fef2f2; color:#b91c1c; border:1px solid #fee2e2; }
+  .rsvp-msg.ok-msg{ background:#ecfdf5; color:#047857; border:1px solid #d1fae5; }
 
   /* More events section */
   .more-block { margin-top: 2.5rem; }
