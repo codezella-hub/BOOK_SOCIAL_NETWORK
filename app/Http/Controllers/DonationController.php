@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donation;
+use App\Models\ApprovalStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +63,7 @@ class DonationController extends Controller
             $validated['book_image'] = $request->file('book_image')->store('donations', 'public');
         }
 
-        Donation::create($validated);
+        $donation = Donation::create($validated);
 
         return redirect()->route('user.donations.index')
             ->with('success', 'Book donation submitted successfully! It will be reviewed by admin.');
@@ -103,7 +104,7 @@ class DonationController extends Controller
             abort(403, 'You are not authorized to edit this donation.');
         }
 
-        if ($donation->status !== 'pending') {
+        if (!$donation->approvalStatus || $donation->approvalStatus->status !== 'pending') {
             return redirect()->route('user.donations.index')
                 ->with('error', 'Only pending donations can be edited.');
         }
@@ -127,7 +128,7 @@ class DonationController extends Controller
             abort(403, 'You are not authorized to update this donation.');
         }
 
-        if ($donation->status !== 'pending') {
+        if (!$donation->approvalStatus || $donation->approvalStatus->status !== 'pending') {
             return redirect()->route('user.donations.index')
                 ->with('error', 'Only pending donations can be updated.');
         }
@@ -172,7 +173,7 @@ class DonationController extends Controller
             abort(403, 'You are not authorized to delete this donation.');
         }
 
-        if ($donation->status !== 'pending') {
+        if (!$donation->approvalStatus || $donation->approvalStatus->status !== 'pending') {
             return redirect()->route('user.donations.index')
                 ->with('error', 'Only pending donations can be deleted.');
         }
@@ -195,19 +196,21 @@ class DonationController extends Controller
      */
     public function adminIndex(Request $request)
     {
-        $query = Donation::with(['user', 'approvedBy']);
+        $query = Donation::with(['user', 'approvalStatus.approvedBy']);
 
         // Get stats for all donations (not filtered)
         $stats = [
             'total' => Donation::count(),
-            'pending' => Donation::where('status', 'pending')->count(),
-            'approved' => Donation::where('status', 'approved')->count(),
-            'rejected' => Donation::where('status', 'rejected')->count(),
+            'pending' => Donation::pending()->count(),
+            'approved' => Donation::approved()->count(),
+            'rejected' => Donation::rejected()->count(),
         ];
 
         // Filter by status if provided
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->whereHas('approvalStatus', function ($q) use ($request) {
+                $q->where('status', $request->status);
+            });
         }
 
         $donations = $query->latest()->paginate(15);
@@ -220,7 +223,7 @@ class DonationController extends Controller
      */
     public function adminShow(Donation $donation)
     {
-        $donation->load(['user', 'approvedBy']);
+        $donation->load(['user', 'approvalStatus.approvedBy']);
         return view('admin.donations.show', compact('donation'));
     }
 
@@ -235,12 +238,16 @@ class DonationController extends Controller
             return redirect()->route('login')->with('error', 'Please log in to approve donations.');
         }
 
-        $donation->update([
-            'status' => 'approved',
-            'approved_at' => now(),
-            'approved_by' => $adminId,
-            'admin_notes' => $request->admin_notes
-        ]);
+        // Create or update approval status
+        $donation->approvalStatus()->updateOrCreate(
+            ['donation_id' => $donation->id],
+            [
+                'status' => 'approved',
+                'approved_at' => now(),
+                'approved_by' => $adminId,
+                'admin_notes' => $request->admin_notes
+            ]
+        );
 
         return back()->with('success', 'Donation approved successfully!');
     }
@@ -260,11 +267,15 @@ class DonationController extends Controller
             'admin_notes' => 'required|string'
         ]);
 
-        $donation->update([
-            'status' => 'rejected',
-            'approved_by' => $adminId,
-            'admin_notes' => $validated['admin_notes']
-        ]);
+        // Create or update approval status
+        $donation->approvalStatus()->updateOrCreate(
+            ['donation_id' => $donation->id],
+            [
+                'status' => 'rejected',
+                'approved_by' => $adminId,
+                'admin_notes' => $validated['admin_notes']
+            ]
+        );
 
         return back()->with('success', 'Donation rejected successfully!');
     }

@@ -3,14 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Social Book Network - Partagez votre passion pour la lecture')</title>
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    @vite(['resources/css/user.css'])
+
     <!-- CSS Section -->
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @vite(['resources/css/user.css'])
+    <style>
+
+</style>
+    @stack('styles')
+
     @yield('styles')
 </head>
 <body>
@@ -30,8 +37,14 @@
                 SocialBook
             </div>
             <ul class="nav-links">
-                <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
+                <li><a href="{{ route('user.home') }}"><i class="fas fa-home"></i> Accueil</a></li>
+
                 <li><a href="{{ route('books.index') }}"><i class="fas fa-compass"></i> Découvrir</a></li>
+
+
+
+                <li><a href="{{ route('user.posts.index') }}"><i class="fas fa-comments"></i> Forum</a></li>
+
                 <li><a href="#"><i class="fas fa-users"></i> Communauté</a></li>
                 @auth
                     <li><a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Donations</a></li>
@@ -40,8 +53,9 @@
                     <a href="#"><i class="fas fa-ellipsis-h"></i> Plus <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-content">
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
+                        @auth
                         <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
-                       <a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Donations</a>
+                        @endauth
                         <a href="#"><i class="fas fa-calendar-alt"></i> Événements</a>
                         <a href="#"><i class="fas fa-question-circle"></i> Aide</a>
                         <a href="#"><i class="fas fa-info-circle"></i> À propos</a>
@@ -172,7 +186,9 @@
 </div>
 
 <!-- Main Content Section -->
-@yield('content')
+<main>
+    @yield('content')
+</main>
 
 <!-- Footer -->
 <footer>
@@ -193,9 +209,9 @@
                 <ul>
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Accueil</a></li>
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Découvrir</a></li>
+                    <li><a href="{{ route('user.posts.index') }}"><i class="fas fa-chevron-right"></i> Forum</a></li>
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Communauté</a></li>
                     <li><a href="#"><i class="fas fa-chevron-right"></i> Blog</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> À propos</a></li>
                 </ul>
             </div>
             <div class="footer-column">
@@ -226,6 +242,10 @@
 <!-- JavaScript Section -->
 @vite(['resources/js/user.js'])
 
+<script>
+</script>
+
+@stack('scripts')
 @yield('scripts')
 </body>
 </html>

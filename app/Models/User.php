@@ -83,8 +83,38 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Donation::class, 'approved_by');
     }
 
+
     public function books()
     {
         return $this->hasMany(Book::class);
     }
+
+
+
+    //User create many posts
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'created_by');
+    }
+
+    //User create many comments
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'created_by');
+    }
+
+    //User give many likes
+    public function likes()
+    {
+        return $this->hasMany(Like::class, 'liked_by');
+    }
+
+    //User make many reports
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'reported_by');
+    }
+
+
+
 }

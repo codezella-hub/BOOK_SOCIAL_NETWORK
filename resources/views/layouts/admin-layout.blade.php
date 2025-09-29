@@ -14,6 +14,9 @@
 
     <!-- CSS Section -->
     @vite(['resources/css/admin.css'])
+    <style>
+    </style>
+
     @yield('styles')
 </head>
 <body>
@@ -50,6 +53,7 @@
                     <span>Users</span>
                 </a>
             </li>
+
             <li class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.categories.index') }}">
                     <i class="fas fa-tags"></i>
@@ -61,6 +65,18 @@
                 <a href="{{ route('admin.books.index') }}">
                     <i class="fas fa-book"></i>
                     <span>Books</span>
+                </a>
+            <li class="{{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.topics.index') }}">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum Management</span>
+                </a>
+            </li>
+            <li class="#">
+                <a href="#">
+                    <i class="fas fa-comments"></i>
+                    <span>Reviews</span>
+
                 </a>
             </li>
             <li class="#">
@@ -87,7 +103,7 @@
                     <span>Back to Site</span>
                 </a>
             </li>
-        </ul>
+          </ul>
     </div>
 
     <!-- Main Content -->
