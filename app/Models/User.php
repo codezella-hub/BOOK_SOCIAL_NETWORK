@@ -59,4 +59,32 @@ class User extends Authenticatable
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
+
+    
+
+    //User create many posts
+    public function posts() 
+    { 
+        return $this->hasMany(Post::class, 'created_by'); 
+    }
+
+    //User create many comments
+    public function comments() 
+    { 
+        return $this->hasMany(Comment::class, 'created_by'); 
+    }
+
+    //User give many likes
+    public function likes() 
+    { 
+        return $this->hasMany(Like::class, 'liked_by'); 
+    }
+
+    //User make many reports
+    public function reports() 
+    { 
+        return $this->hasMany(Report::class, 'reported_by'); 
+    }
+
+
 }
