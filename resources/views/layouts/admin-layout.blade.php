@@ -50,10 +50,17 @@
                     <span>Users</span>
                 </a>
             </li>
-            <li class="#">
-                <a href="#">
-                    <i class="fas fa-comments"></i>
-                    <span>Reviews</span>
+            <li class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.categories.index') }}">
+                    <i class="fas fa-tags"></i>
+                    <span>Categories</span>
+                </a>
+            </li>
+            <!-- Dans admin.blade.php -->
+            <li class="{{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.books.index') }}">
+                    <i class="fas fa-book"></i>
+                    <span>Books</span>
                 </a>
             </li>
             <li class="#">

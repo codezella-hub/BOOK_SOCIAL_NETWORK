@@ -31,7 +31,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-                <li><a href="#"><i class="fas fa-compass"></i> Découvrir</a></li>
+                <li><a href="{{ route('books.index') }}"><i class="fas fa-compass"></i> Découvrir</a></li>
                 <li><a href="#"><i class="fas fa-users"></i> Communauté</a></li>
                 @auth
                     <li><a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Donations</a></li>
@@ -40,6 +40,8 @@
                     <a href="#"><i class="fas fa-ellipsis-h"></i> Plus <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-content">
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
+                        <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
+                       <a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Donations</a>
                         <a href="#"><i class="fas fa-calendar-alt"></i> Événements</a>
                         <a href="#"><i class="fas fa-question-circle"></i> Aide</a>
                         <a href="#"><i class="fas fa-info-circle"></i> À propos</a>

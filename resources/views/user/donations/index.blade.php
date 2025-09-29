@@ -36,7 +36,7 @@
                         <div class="donation-info">
                             <h3>{{ $donation->book_title }}</h3>
                             <p class="author">Par {{ $donation->author }}</p>
-                            
+
                             @if($donation->genre)
                                 <span class="genre-tag">{{ $donation->genre }}</span>
                             @endif
@@ -64,7 +64,7 @@
                                     <a href="{{ route('user.donations.edit', $donation) }}" class="btn btn-outline btn-sm">
                                         <i class="fas fa-edit"></i> Modifier
                                     </a>
-                                    <form action="{{ route('user.donations.destroy', $donation) }}" method="POST" class="inline" 
+                                    <form action="{{ route('user.donations.destroy', $donation) }}" method="POST" class="inline"
                                           onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette donation ?')">
                                         @csrf
                                         @method('DELETE')
@@ -325,7 +325,7 @@
     .donations-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .donation-actions {
         flex-wrap: wrap;
     }

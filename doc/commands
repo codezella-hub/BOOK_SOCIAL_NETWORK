@@ -20,6 +20,9 @@ recupperer role et user id in blade
 
 {{ auth()->user()->id }}  // id
 
+// link images
+
+php artisan storage:link
 
 
 reccuperer en controller
