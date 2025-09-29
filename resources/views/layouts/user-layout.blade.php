@@ -37,7 +37,7 @@
                     <a href="#"><i class="fas fa-ellipsis-h"></i> Plus <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-content">
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
-                        <a href="#"><i class="fas fa-calendar-alt"></i> Événements</a>
+                        <a href="/#events">Events</a>
                         <a href="#"><i class="fas fa-question-circle"></i> Aide</a>
                         <a href="#"><i class="fas fa-info-circle"></i> À propos</a>
                     </div>

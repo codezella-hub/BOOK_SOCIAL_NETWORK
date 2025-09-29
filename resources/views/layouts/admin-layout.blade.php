@@ -50,16 +50,13 @@
                     <span>Reviews</span>
                 </a>
             </li>
+            {{-- <li class="#">
+                <flux:navlist.item icon="calendar" :href="route('admin.events.index')" :current="request()->routeIs('admin.events.*')" wire:navigate>Events1</flux:navlist.item>
+            </li> --}}
             <li class="#">
-                <a href="#">
-                    <i class="fas fa-user-friends"></i>
-                    <span>Clubs</span>
-                </a>
-            </li>
-            <li class="#">
-                <a href="#">
+                <a href="{{ route('admin.events.index') }}" class="{{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar"></i>
-                    <span>Analytics</span>
+                    <span>Events</span>
                 </a>
             </li>
             <li class="#">
