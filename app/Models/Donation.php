@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Donation extends Model
 {
@@ -15,15 +16,20 @@ class Donation extends Model
         'genre',
         'condition',
         'book_image',
-        'status',
-        'admin_notes',
-        'approved_at',
-        'approved_by',
     ];
 
-    protected $casts = [
-        'approved_at' => 'datetime',
-    ];
+    protected static function booted()
+    {
+        static::created(function ($donation) {
+            // Automatically create approval status when donation is created
+            ApprovalStatus::create([
+                'donation_id' => $donation->id,
+                'status' => 'pending'
+            ]);
+        });
+    }
+
+    // No casts needed now
 
     /**
      * Get the user who donated the book
@@ -34,11 +40,11 @@ class Donation extends Model
     }
 
     /**
-     * Get the admin who approved/rejected the donation
+     * Get the approval status for this donation
      */
-    public function approvedBy(): BelongsTo
+    public function approvalStatus(): HasOne
     {
-        return $this->belongsTo(User::class, 'approved_by');
+        return $this->hasOne(ApprovalStatus::class);
     }
 
     /**
@@ -46,7 +52,9 @@ class Donation extends Model
      */
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->whereHas('approvalStatus', function ($q) {
+            $q->where('status', 'pending');
+        });
     }
 
     /**
@@ -54,7 +62,9 @@ class Donation extends Model
      */
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->whereHas('approvalStatus', function ($q) {
+            $q->where('status', 'approved');
+        });
     }
 
     /**
@@ -62,6 +72,42 @@ class Donation extends Model
      */
     public function scopeRejected($query)
     {
-        return $query->where('status', 'rejected');
+        return $query->whereHas('approvalStatus', function ($q) {
+            $q->where('status', 'rejected');
+        });
+    }
+
+    /**
+     * Get the status of this donation from its approval status
+     */
+    public function getStatusAttribute()
+    {
+        return $this->approvalStatus ? $this->approvalStatus->status : 'pending';
+    }
+
+    /**
+     * Get the admin notes from approval status
+     */
+    public function getAdminNotesAttribute()
+    {
+        return $this->approvalStatus ? $this->approvalStatus->admin_notes : null;
+    }
+
+    /**
+     * Get the approved at date from approval status
+     */
+    public function getApprovedAtAttribute()
+    {
+        return $this->approvalStatus ? $this->approvalStatus->approved_at : null;
+    }
+
+    /**
+     * Get the user who approved this donation through the approval status
+     */
+    public function getApprovedByAttribute()
+    {
+        return $this->approvalStatus && $this->approvalStatus->approvedBy 
+            ? $this->approvalStatus->approvedBy 
+            : null;
     }
 }
