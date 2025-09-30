@@ -1,5 +1,76 @@
 @extends('layouts.user-layout')
+<style>
+/* Tabs */
+#events-tabs .tabs{
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(5,7,9,.05);
+}
+#events-tabs .tab{
+  appearance:none;
+  display:flex; align-items:center; justify-content:center;
+  padding:.8rem .6rem;
+  font-weight:700; color:#374151;
+  background: transparent; border: none; cursor: pointer;
+  position: relative; z-index: 1;
+}
+#events-tabs .tab:hover{ background:#f9fafb; }
 
+#events-tabs .tab.is-active{ color:#111827; }
+#events-tabs .tab-underline{
+  position:absolute; bottom:0; left:0;
+  width: calc(100% / 3);
+  height: 3px; background:#111827;
+  transform: translateX(0%);
+  transition: transform .25s ease;
+}
+
+/* Panels */
+#events-tabs .panel{ display:none; }
+#events-tabs .panel.is-active{ display:block; }
+
+/* Card adjustments stay consistent with your design */
+</style>
+
+<script>
+(function(){
+  const root = document.querySelector('#events-tabs');
+  if(!root) return;
+
+  const tabs = Array.from(root.querySelectorAll('.tab'));
+  const underline = root.querySelector('.tab-underline');
+  const panels = {
+    all: root.querySelector('#panel-all'),
+    upcoming: root.querySelector('#panel-upcoming'),
+    past: root.querySelector('#panel-past')
+  };
+
+  function activate(name){
+    tabs.forEach((t, i) => {
+      const ok = t.dataset.tab === name;
+      t.classList.toggle('is-active', ok);
+      if(ok){
+        underline.style.transform = `translateX(${i*100}%)`;
+      }
+    });
+    Object.entries(panels).forEach(([k, el]) => {
+      el.classList.toggle('is-active', k === name);
+    });
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.tab)));
+
+  // Optional: deep link ?tab=upcoming
+  const url = new URL(window.location.href);
+  const q = (url.searchParams.get('tab') || 'all').toLowerCase();
+  if(['all','upcoming','past'].includes(q)) activate(q);
+})();
+</script>
 @section('title', 'Events')
 
 @section('content')
@@ -99,76 +170,5 @@
   @endverbatim
 @endpush
 
-<style>
-/* Tabs */
-#events-tabs .tabs{
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 16px rgba(5,7,9,.05);
-}
-#events-tabs .tab{
-  appearance:none;
-  display:flex; align-items:center; justify-content:center;
-  padding:.8rem .6rem;
-  font-weight:700; color:#374151;
-  background: transparent; border: none; cursor: pointer;
-  position: relative; z-index: 1;
-}
-#events-tabs .tab:hover{ background:#f9fafb; }
 
-#events-tabs .tab.is-active{ color:#111827; }
-#events-tabs .tab-underline{
-  position:absolute; bottom:0; left:0;
-  width: calc(100% / 3);
-  height: 3px; background:#111827;
-  transform: translateX(0%);
-  transition: transform .25s ease;
-}
-
-/* Panels */
-#events-tabs .panel{ display:none; }
-#events-tabs .panel.is-active{ display:block; }
-
-/* Card adjustments stay consistent with your design */
-</style>
-
-<script>
-(function(){
-  const root = document.querySelector('#events-tabs');
-  if(!root) return;
-
-  const tabs = Array.from(root.querySelectorAll('.tab'));
-  const underline = root.querySelector('.tab-underline');
-  const panels = {
-    all: root.querySelector('#panel-all'),
-    upcoming: root.querySelector('#panel-upcoming'),
-    past: root.querySelector('#panel-past')
-  };
-
-  function activate(name){
-    tabs.forEach((t, i) => {
-      const ok = t.dataset.tab === name;
-      t.classList.toggle('is-active', ok);
-      if(ok){
-        underline.style.transform = `translateX(${i*100}%)`;
-      }
-    });
-    Object.entries(panels).forEach(([k, el]) => {
-      el.classList.toggle('is-active', k === name);
-    });
-  }
-
-  tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.tab)));
-
-  // Optional: deep link ?tab=upcoming
-  const url = new URL(window.location.href);
-  const q = (url.searchParams.get('tab') || 'all').toLowerCase();
-  if(['all','upcoming','past'].includes(q)) activate(q);
-})();
-</script>
 @endsection

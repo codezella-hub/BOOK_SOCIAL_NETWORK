@@ -1,78 +1,6 @@
 @php
     // $userStatus may be 'going', 'interested', 'uninterested', or null
 @endphp
-<div id="rsvpV2" class="rsvp-wrap">
-  <div class="rsvp-grid" role="group" aria-label="RSVP actions">
-    <form method="POST" action="{{ route('events.rsvp', $event) }}" class="rsvp-col">
-      @csrf
-      <input type="hidden" name="status" value="going">
-      <button type="submit"
-              class="rsvp-tile {{ $userStatus==='going' ? 'is-active is-going' : 'is-going' }}"
-              aria-pressed="{{ $userStatus==='going' ? 'true' : 'false' }}">
-        <span class="tile-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="tile-svg"><path d="M2 12l5 5L22 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </span>
-        <span class="tile-text">
-          <span class="tile-title">I’m Going</span>
-          <span class="tile-sub">Reserve a seat</span>
-        </span>
-      </button>
-    </form>
-
-    <form method="POST" action="{{ route('events.rsvp', $event) }}" class="rsvp-col">
-      @csrf
-      <input type="hidden" name="status" value="interested">
-      <button type="submit"
-              class="rsvp-tile {{ $userStatus==='interested' ? 'is-active is-interest' : 'is-interest' }}"
-              aria-pressed="{{ $userStatus==='interested' ? 'true' : 'false' }}">
-        <span class="tile-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="tile-svg"><path d="M12 3v18M3 12h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </span>
-        <span class="tile-text">
-          <span class="tile-title">Interested</span>
-          <span class="tile-sub">Get updates</span>
-        </span>
-      </button>
-    </form>
-
-    <form method="POST" action="{{ route('events.rsvp', $event) }}" class="rsvp-col">
-      @csrf
-      <input type="hidden" name="status" value="uninterested">
-      <button type="submit"
-              class="rsvp-tile {{ $userStatus==='uninterested' ? 'is-active is-skip' : 'is-skip' }}"
-              aria-pressed="{{ $userStatus==='uninterested' ? 'true' : 'false' }}">
-        <span class="tile-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="tile-svg"><path d="M4 4l16 16M20 4L4 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </span>
-        <span class="tile-text">
-          <span class="tile-title">Skip</span>
-          <span class="tile-sub">Not this one</span>
-        </span>
-      </button>
-    </form>
-
-    @if($userStatus === 'going' && $ticket)
-      <a href="{{ route('tickets.download', [$event, $ticket]) }}" class="rsvp-tile ticket-tile" title="Download ticket">
-        <span class="tile-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="tile-svg"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </span>
-        <span class="tile-text">
-          <span class="tile-title">Download Ticket</span>
-          <span class="tile-sub">PDF / Pass</span>
-        </span>
-      </a>
-    @endif
-  </div>
-
-  @if ($errors->any())
-    <div class="rsvp-note err" role="alert">{{ $errors->first() }}</div>
-  @endif
-  @if (session('status'))
-    <div class="rsvp-note ok" role="status">{{ session('status') }}</div>
-  @endif
-</div>
-
-
 <style>
 /* Scoped to the unique wrapper so it wins the cascade */
 #rsvpV2.rsvp-wrap { margin-top: 1.2rem; }
@@ -163,3 +91,76 @@
 }
 
 </style>
+<div id="rsvpV2" class="rsvp-wrap">
+  <div class="rsvp-grid" role="group" aria-label="RSVP actions">
+    <form method="POST" action="{{ route('events.rsvp', $event) }}" class="rsvp-col">
+      @csrf
+      <input type="hidden" name="status" value="going">
+      <button type="submit"
+              class="rsvp-tile {{ $userStatus==='going' ? 'is-active is-going' : 'is-going' }}"
+              aria-pressed="{{ $userStatus==='going' ? 'true' : 'false' }}">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="tile-svg"><path d="M2 12l5 5L22 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span class="tile-text">
+          <span class="tile-title">I’m Going</span>
+          <span class="tile-sub">Reserve a seat</span>
+        </span>
+      </button>
+    </form>
+
+    <form method="POST" action="{{ route('events.rsvp', $event) }}" class="rsvp-col">
+      @csrf
+      <input type="hidden" name="status" value="interested">
+      <button type="submit"
+              class="rsvp-tile {{ $userStatus==='interested' ? 'is-active is-interest' : 'is-interest' }}"
+              aria-pressed="{{ $userStatus==='interested' ? 'true' : 'false' }}">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="tile-svg"><path d="M12 3v18M3 12h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span class="tile-text">
+          <span class="tile-title">Interested</span>
+          <span class="tile-sub">Get updates</span>
+        </span>
+      </button>
+    </form>
+
+    <form method="POST" action="{{ route('events.rsvp', $event) }}" class="rsvp-col">
+      @csrf
+      <input type="hidden" name="status" value="uninterested">
+      <button type="submit"
+              class="rsvp-tile {{ $userStatus==='uninterested' ? 'is-active is-skip' : 'is-skip' }}"
+              aria-pressed="{{ $userStatus==='uninterested' ? 'true' : 'false' }}">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="tile-svg"><path d="M4 4l16 16M20 4L4 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span class="tile-text">
+          <span class="tile-title">Skip</span>
+          <span class="tile-sub">Not this one</span>
+        </span>
+      </button>
+    </form>
+
+    @if($userStatus === 'going' && $ticket)
+      <a href="{{ route('tickets.download', [$event, $ticket]) }}" class="rsvp-tile ticket-tile" title="Download ticket">
+        <span class="tile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="tile-svg"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span class="tile-text">
+          <span class="tile-title">Download Ticket</span>
+          <span class="tile-sub">PDF / Pass</span>
+        </span>
+      </a>
+    @endif
+  </div>
+
+  @if ($errors->any())
+    <div class="rsvp-note err" role="alert">{{ $errors->first() }}</div>
+  @endif
+  @if (session('status'))
+    <div class="rsvp-note ok" role="status">{{ session('status') }}</div>
+  @endif
+</div>
+
+
+

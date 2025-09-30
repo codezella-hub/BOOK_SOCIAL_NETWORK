@@ -7,11 +7,13 @@
 
 @include('partials.hero-user')
 @include('partials.categorie-user')
-@include('partials.book-user')
+<section id="events">
+  @include('partials.event-user')
+</section>
 
 <!-- Events Section -->
 <!-- Events Section -->
-<section id="events" class="events-wrap">
+{{-- <section id="events" class="events-wrap">
   <div class="events-head">
     <h2>Events</h2>
     <a href="{{ route('events.index') }}" class="pill-btn">View all</a>
@@ -69,7 +71,7 @@
       @endforeach
     </div>
   @endif
-</section>
+</section> --}}
 
 {{-- Local styles for Events --}}
 <style>
