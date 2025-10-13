@@ -43,6 +43,12 @@
                     <span>Donations</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('admin.remises.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.remises.index') }}">
+                    <i class="fas fa-handshake"></i>
+                    <span>Remises</span>
+                </a>
+            </li>
             <li class="#">
                 <a href="#">
                     <i class="fas fa-book"></i>

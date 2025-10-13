@@ -126,6 +126,30 @@
                             </button>
                         </form>
                     </div>
+                @elseif($donation->status === 'approved')
+                    @if(!$donation->remise)
+                        <div class="action-buttons">
+                            <a href="{{ route('remise.create', $donation->id) }}" class="btn btn-success">
+                                <i class="fas fa-handshake"></i> Planifier la remise
+                            </a>
+                        </div>
+                    @else
+                        <div class="remise-info">
+                            <h3><i class="fas fa-handshake"></i> Remise planifiée</h3>
+                            <div class="remise-details">
+                                <p><strong>Date :</strong> {{ $donation->remise->date_rendez_vous_formatted }}</p>
+                                <p><strong>Lieu :</strong> {{ $donation->remise->lieu }}</p>
+                                <p><strong>Statut :</strong> 
+                                    <span class="status-badge status-{{ $donation->remise->statut }}">
+                                        {{ $donation->remise->statut_label }}
+                                    </span>
+                                </p>
+                                @if($donation->remise->admin)
+                                    <p><strong>Admin responsable :</strong> {{ $donation->remise->admin->name }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -410,6 +434,62 @@
 .btn-outline:hover {
     background: #3498db;
     color: white;
+}
+
+.btn-success {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #229954;
+    transform: translateY(-1px);
+}
+
+.remise-info {
+    background: #e8f5e8;
+    border: 1px solid #27ae60;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.remise-info h3 {
+    color: #27ae60;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+}
+
+.remise-details p {
+    margin: 0.5rem 0;
+    color: #2c3e50;
+}
+
+.remise-details .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-en_attente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-prevu {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-effectue {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-annule {
+    background: #f8d7da;
+    color: #721c24;
 }
 
 @media (max-width: 1024px) {
