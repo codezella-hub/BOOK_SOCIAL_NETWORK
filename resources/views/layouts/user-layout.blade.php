@@ -9,10 +9,14 @@
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+
+
+    @vite(['resources/css/app.css', 'resources/css/user.css'])
+
     <!-- CSS Section -->
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    @vite(['resources/css/user.css'])
+ 
     <style>
 
 </style>
@@ -53,12 +57,16 @@
                     <a href="#"><i class="fas fa-ellipsis-h"></i> Plus <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-content">
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
+
                         @auth
                         <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
                        <a href="{{ route('user.quiz.index') }}"><i class="fas fa-book"></i> Quiz</a>
                         @endauth
 
-                        <a href="#"><i class="fas fa-calendar-alt"></i> Événements</a>
+                       
+
+                        <a href="/#events">Events</a>
+
                         <a href="#"><i class="fas fa-question-circle"></i> Aide</a>
                         <a href="#"><i class="fas fa-info-circle"></i> À propos</a>
                     </div>
