@@ -1,5 +1,46 @@
 # 📚 Book Social Network  
 
+## Docker (dev)
+
+Prerequisites: Docker Desktop.
+
+1) Build and start services
+
+```bash
+docker compose up --build -d
+```
+
+Services:
+- App (PHP-FPM): serves PHP at port 9000
+- Web (Nginx): http://localhost:8080
+- DB (MySQL 8): port 3307 on host (user: laravel / pass: laravel / db: laravel)
+- Node (Vite dev): http://localhost:5173
+
+2) First-time setup (inside the app container)
+
+```bash
+docker compose exec app php artisan migrate --force
+```
+
+If you don't have a `.env`, the container will attempt to copy `docker/.env.docker` to `.env`. If that file doesn't exist, create a local `.env` and set at least:
+
+```
+APP_URL=http://localhost:8080
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=laravel
+DB_PASSWORD=laravel
+VITE_URL=http://localhost:5173
+```
+
+3) Stop
+
+```bash
+docker compose down
+```
+
 ![Laravel](https://img.shields.io/badge/Laravel-12-red?style=for-the-badge&logo=laravel)  
 ![Blade](https://img.shields.io/badge/Blade-Template-orange?style=for-the-badge)  
 ![MySQL](https://img.shields.io/badge/MySQL-Database-blue?style=for-the-badge&logo=mysql)  
