@@ -117,6 +117,9 @@
                         <a href="{{ route('user.donations.edit', $donation) }}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> Modifier la donation
                         </a>
+                        <a href="{{ route('chatbot.donation', $donation->id) }}" class="btn btn-ai">
+                            <i class="fas fa-robot"></i> Discuter avec l'IA
+                        </a>
                         <form action="{{ route('user.donations.destroy', $donation) }}" method="POST" class="inline" 
                               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette donation ?')">
                             @csrf
@@ -131,6 +134,15 @@
                         <div class="action-buttons">
                             <a href="{{ route('remise.create', $donation->id) }}" class="btn btn-success">
                                 <i class="fas fa-handshake"></i> Planifier la remise
+                            </a>
+                            <a href="{{ route('chatbot.donation', $donation->id) }}" class="btn btn-ai">
+                                <i class="fas fa-robot"></i> Discuter avec l'IA
+                            </a>
+                        </div>
+                    @else
+                        <div class="action-buttons">
+                            <a href="{{ route('chatbot.donation', $donation->id) }}" class="btn btn-ai">
+                                <i class="fas fa-robot"></i> Discuter avec l'IA
                             </a>
                         </div>
                     @else
@@ -446,6 +458,18 @@
     transform: translateY(-1px);
 }
 
+.btn-ai {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-ai:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
 .remise-info {
     background: #e8f5e8;
     border: 1px solid #27ae60;
@@ -490,6 +514,71 @@
 .status-annule {
     background: #f8d7da;
     color: #721c24;
+}
+
+.ai-suggestion-box {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border: 1px solid #e1bee7;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.ai-suggestion-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ai-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.ai-text {
+    flex: 1;
+}
+
+.ai-text h4 {
+    margin: 0 0 0.5rem 0;
+    color: #4a148c;
+    font-size: 1.1rem;
+}
+
+.ai-text p {
+    margin: 0;
+    color: #6a1b9a;
+    font-size: 0.9rem;
+}
+
+.btn-ai-compact {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-ai-compact:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    color: white;
 }
 
 @media (max-width: 1024px) {

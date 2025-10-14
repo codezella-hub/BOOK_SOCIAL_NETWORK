@@ -187,6 +187,14 @@ Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('even
 Route::middleware('auth')->group(function () {
     Route::post('/events/{event:slug}/rsvp', [RSVPController::class, 'store'])->name('events.rsvp');
     Route::get('/events/{event}/tickets/{ticket}/download', TicketDownloadController::class)->name('tickets.download');
+    
+    // Routes pour le chatbot IA
+    Route::get('/chatbot', [App\Http\Controllers\ChatbotController::class, 'index'])->name('chatbot.index');
+    Route::post('/chatbot/ask', [App\Http\Controllers\ChatbotController::class, 'ask'])->name('chatbot.ask');
+    Route::post('/chatbot/similar-books', [App\Http\Controllers\ChatbotController::class, 'getSimilarBooks'])->name('chatbot.similar-books');
+    Route::post('/chatbot/author-info', [App\Http\Controllers\ChatbotController::class, 'getAuthorInfo'])->name('chatbot.author-info');
+    Route::post('/chatbot/recommendations', [App\Http\Controllers\ChatbotController::class, 'getRecommendationsByGenre'])->name('chatbot.recommendations');
+    Route::get('/chatbot/donation/{donation}', [App\Http\Controllers\ChatbotController::class, 'fromDonation'])->name('chatbot.donation');
 });
 
 require __DIR__.'/auth.php';
