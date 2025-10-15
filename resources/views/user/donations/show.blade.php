@@ -145,7 +145,6 @@
                                 <i class="fas fa-robot"></i> Discuter avec l'IA
                             </a>
                         </div>
-                    @else
                         <div class="remise-info">
                             <h3><i class="fas fa-handshake"></i> Remise planifiée</h3>
                             <div class="remise-details">
