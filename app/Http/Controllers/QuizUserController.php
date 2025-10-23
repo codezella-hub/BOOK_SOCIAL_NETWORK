@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\Quiz;
 use App\Models\Question;
 use App\Models\Resultats;
@@ -17,104 +18,106 @@ class QuizUserController extends Controller
     public function index()
     {
         $quizzes = Quiz::where('is_active', true)
-                      ->with('questions')
-                      ->withCount('questions')
-                      ->get();
+            ->with('questions')
+            ->withCount('questions')
+            ->get();
 
-        // Récupérer les résultats de l'utilisateur connecté
-        if (Auth::check()) {
-            $userResults = Resultats::where('id_user', Auth::id())
-                                   ->get()
-                                   ->keyBy('id_quiz');
-        } else {
-            $userResults = collect();
-        }
+        $userResults = Auth::check()
+            ? Resultats::where('id_user', Auth::id())->get()->keyBy('id_quiz')
+            : collect();
 
-        // CORRECTION : Changer le chemin de la vue
         return view('user.GestionQuiz.index', compact('quizzes', 'userResults'));
     }
 
     /**
      * Afficher les détails d'un quiz avant de commencer
      */
-    public function show(Quiz $quiz)
+    public function show(Book $book, Quiz $quiz)
     {
-        if (!$quiz->is_active) {
+        if ($quiz->id_book !== $book->id) {
             return redirect()->route('user.quiz.index')
-                           ->with('error', 'Ce quiz n\'est pas disponible.');
+                ->with('error', 'Ce quiz ne correspond pas au livre sélectionné.');
         }
 
-        // Vérifier le nombre de tentatives si l'utilisateur est connecté
+        if (!$quiz->is_active) {
+            return redirect()->route('user.quiz.index')
+                ->with('error', 'Ce quiz n\'est pas disponible.');
+        }
+
         $attemptsCount = 0;
         $previousResults = collect();
 
         if (Auth::check()) {
             $previousResults = Resultats::where('id_user', Auth::id())
-                                       ->where('id_quiz', $quiz->id_quiz)
-                                       ->orderBy('created_at', 'desc')
-                                       ->get();
+                ->where('id_quiz', $quiz->id_quiz)
+                ->orderBy('created_at', 'desc')
+                ->get();
             $attemptsCount = $previousResults->count();
         }
 
-        // CORRECTION : Changer le chemin de la vue
-        return view('user.GestionQuiz.show', compact('quiz', 'attemptsCount', 'previousResults'));
+        return view('user.GestionQuiz.show', compact('book', 'quiz', 'attemptsCount', 'previousResults'));
     }
 
     /**
      * Commencer un quiz
      */
-    public function start(Quiz $quiz)
+    public function start(Book $book, Quiz $quiz)
     {
-        if (!$quiz->is_active) {
+        if ($quiz->id_book !== $book->id) {
             return redirect()->route('user.quiz.index')
-                           ->with('error', 'Ce quiz n\'est pas disponible.');
+                ->with('error', 'Ce quiz ne correspond pas au livre sélectionné.');
         }
 
-        // Vérifier le nombre de tentatives si l'utilisateur est connecté
+        if (!$quiz->is_active) {
+            return redirect()->route('user.quiz.index')
+                ->with('error', 'Ce quiz n\'est pas disponible.');
+        }
+
         if (Auth::check()) {
             $attemptsCount = Resultats::where('id_user', Auth::id())
-                                     ->where('id_quiz', $quiz->id_quiz)
-                                     ->count();
+                ->where('id_quiz', $quiz->id_quiz)
+                ->count();
 
             if ($attemptsCount >= $quiz->max_attempts) {
-                return redirect()->route('user.quiz.show', $quiz)
-                             ->with('error', 'Vous avez atteint le nombre maximum de tentatives pour ce quiz.');
+                return redirect()->route('user.quiz.show', [$book, $quiz])
+                    ->with('error', 'Vous avez atteint le nombre maximum de tentatives pour ce quiz.');
             }
         }
 
-        // Charger les questions
         $questions = $quiz->questions()
-                         ->orderBy('order_position')
-                         ->take($quiz->nb_questions)
-                         ->get();
+            ->orderBy('order_position')
+            ->take($quiz->nb_questions)
+            ->get();
 
         if ($questions->isEmpty()) {
-            return redirect()->route('user.quiz.show', $quiz)
-                           ->with('error', 'Ce quiz n\'a pas encore de questions.');
+            return redirect()->route('user.quiz.show', [$book, $quiz])
+                ->with('error', 'Ce quiz n\'a pas encore de questions.');
         }
 
-        // Stocker l'heure de début en session
         session(['quiz_' . $quiz->id_quiz . '_start' => Carbon::now()]);
 
-        // CORRECTION : Changer le chemin de la vue
-        return view('user.GestionQuiz.play', compact('quiz', 'questions'));
+        return view('user.GestionQuiz.play', compact('book', 'quiz', 'questions'));
     }
 
     /**
      * Soumettre les réponses du quiz
      */
-    public function submit(Request $request, Quiz $quiz)
+    public function submit(Request $request, Book $book, Quiz $quiz)
     {
+        if ($quiz->id_book !== $book->id) {
+            return redirect()->route('user.quiz.index')
+                ->with('error', 'Ce quiz ne correspond pas au livre sélectionné.');
+        }
+
         $request->validate([
             'answers' => 'required|array',
             'answers.*' => 'required|in:A,B,C,D'
         ]);
 
-        // Calculer le score
         $questions = $quiz->questions()
-                         ->orderBy('order_position')
-                         ->take($quiz->nb_questions)
-                         ->get();
+            ->orderBy('order_position')
+            ->take($quiz->nb_questions)
+            ->get();
 
         $totalPoints = 0;
         $earnedPoints = 0;
@@ -122,8 +125,8 @@ class QuizUserController extends Controller
 
         foreach ($questions as $question) {
             $totalPoints += $question->points;
-
             $userAnswer = $request->answers[$question->id] ?? null;
+
             if ($userAnswer === $question->correct_answer) {
                 $earnedPoints += $question->points;
                 $correctAnswers++;
@@ -131,14 +134,15 @@ class QuizUserController extends Controller
         }
 
         $percentage = $totalPoints > 0 ? ($earnedPoints / $totalPoints) * 100 : 0;
-        $passed = $percentage >= 70; // Seuil de réussite à 70%
+        $passed = $percentage >= 70;
 
         // Créer le résultat si l'utilisateur est connecté
         $result = null;
+
         if (Auth::check()) {
             $attemptNumber = Resultats::where('id_user', Auth::id())
-                                     ->where('id_quiz', $quiz->id_quiz)
-                                     ->count() + 1;
+                ->where('id_quiz', $quiz->id_quiz)
+                ->count() + 1;
 
             $startTime = session('quiz_' . $quiz->id_quiz . '_start');
 
@@ -155,11 +159,17 @@ class QuizUserController extends Controller
                 'completed_at' => Carbon::now()
             ]);
 
-            // Nettoyer la session
             session()->forget('quiz_' . $quiz->id_quiz . '_start');
+
+            /**
+             * ✅ Rafraîchir les composants Livewire (compatible Livewire v3 / Volt)
+             */
+            if (class_exists(\Livewire\Features\SupportEvents\Event::class)) {
+                event(new \Livewire\Features\SupportEvents\Event('quizUpdated', []));
+            }
         }
 
-        // Préparer les détails des réponses pour l'affichage
+        // Préparer les détails pour l'affichage
         $reviewData = [];
         foreach ($questions as $question) {
             $userAnswer = $request->answers[$question->id] ?? null;
@@ -170,8 +180,8 @@ class QuizUserController extends Controller
             ];
         }
 
-        // CORRECTION : Changer le chemin de la vue
         return view('user.GestionQuiz.result', compact(
+            'book',
             'quiz',
             'result',
             'earnedPoints',
@@ -186,19 +196,40 @@ class QuizUserController extends Controller
     /**
      * Voir l'historique des résultats d'un utilisateur
      */
-    public function history()
+    public function history(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect()->route('login')
-                           ->with('error', 'Vous devez être connecté pour voir votre historique.');
+        $query = Resultats::where('id_user', Auth::id())
+            ->with('quiz')
+            ->orderBy('completed_at', 'desc');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('quiz', function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%");
+            });
         }
 
-        $results = Resultats::where('id_user', Auth::id())
-                           ->with('quiz')
-                           ->orderBy('created_at', 'desc')
-                           ->paginate(10);
-
-        // CORRECTION : Changer le chemin de la vue
+        $results = $query->paginate(10)->appends(['search' => $request->search]);
         return view('user.GestionQuiz.history', compact('results'));
+    }
+
+    /**
+     * Lister les quiz d'un livre
+     */
+    public function byBook($bookId)
+    {
+        $book = Book::findOrFail($bookId);
+
+        $quizzes = Quiz::where('id_book', $bookId)
+            ->where('is_active', true)
+            ->withCount('questions')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $userResults = Auth::check()
+            ? Resultats::where('id_user', Auth::id())->get()->keyBy('id_quiz')
+            : collect();
+
+        return view('user.GestionQuiz.byBook', compact('book', 'quizzes', 'userResults'));
     }
 }

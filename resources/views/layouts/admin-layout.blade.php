@@ -234,12 +234,13 @@
                 <a href="{{ route('admin.books.index') }}">
                     <i class="fas fa-book"></i>
                     <span>Books</span>
-                </a>
-            <li class="{{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.topics.index') }}">
-                    <i class="fas fa-comments"></i>
-                    <span>Forum Management</span>
-                </a>
+           <li class="{{ request()->routeIs('admin.forum.*') ? 'active' : '' }}">
+    <a href="{{ route('admin.forum.index') }}">
+        <i class="fas fa-comments"></i>
+        <span>Forum Management</span>
+    </a>
+</li>
+
             </li>
             <li class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.reports.index') }}">

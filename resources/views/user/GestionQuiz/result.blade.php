@@ -404,10 +404,10 @@
     </div>
 
     <div class="action-buttons">
-        <a href="{{ route('user.quiz.index') }}" class="btn btn-secondary">
+        <a href="{{ route('user.quiz.byBook', $book) }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Retour aux quiz
         </a>
-        <a href="{{ route('user.quiz.show', $quiz) }}" class="btn btn-primary">
+        <a href="{{ route('user.quiz.show', [$book, $quiz]) }}" class="btn btn-primary">
             <i class="fas fa-redo"></i> Recommencer ce quiz
         </a>
         @if(Auth::check())

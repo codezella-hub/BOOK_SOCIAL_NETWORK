@@ -393,14 +393,14 @@
 
     <!-- SECTION DES ACTIONS DU QUIZ - CORRIGÉE -->
     <div class="quiz-actions">
-        <a href="{{ route('user.quiz.index') }}" class="btn btn-secondary">
+        <a href="{{ route('user.quiz.byBook', $book) }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Retour aux quiz
         </a>
 
         @if($quiz->questions->count() > 0)
             @auth
                 @if($attemptsCount < $quiz->max_attempts)
-                    <a href="{{ route('user.quiz.start', $quiz->id_quiz) }}" class="btn btn-primary">
+                    <a href="{{ route('user.quiz.start', [$book, $quiz]) }}" class="btn btn-primary">
                         <i class="fas fa-play"></i> Commencer le quiz
                     </a>
                 @else
@@ -409,7 +409,7 @@
                     </button>
                 @endif
             @else
-                <a href="{{ route('user.quiz.start', $quiz->id_quiz) }}" class="btn btn-primary">
+                <a href="{{ route('user.quiz.start', [$book, $quiz]) }}" class="btn btn-primary">
                     <i class="fas fa-play"></i> Commencer le quiz (non sauvegardé)
                 </a>
             @endauth

@@ -9,7 +9,20 @@ class Quiz extends Model
 {
     use HasFactory;
 
+    // ✅ Définir la clé primaire personnalisée
     protected $primaryKey = 'id_quiz';
+
+    // ✅ Indiquer que la clé est auto-incrémentée
+    public $incrementing = true;
+
+    // ✅ Indiquer que c’est un entier (sinon Laravel le prend comme string)
+    protected $keyType = 'int';
+
+    // ✅ Utiliser 'id_quiz' pour le route model binding
+    public function getRouteKeyName()
+    {
+        return 'id_quiz';
+    }
 
     protected $fillable = [
         'title',
@@ -19,7 +32,7 @@ class Quiz extends Model
         'max_attempts',
         'time_limit',
         'is_active',
-        'id_book'
+        'id_book',
     ];
 
     protected $casts = [
@@ -27,41 +40,28 @@ class Quiz extends Model
         'nb_questions' => 'integer',
         'max_attempts' => 'integer',
         'time_limit' => 'integer',
-        'id_book' => 'integer'
+        'id_book' => 'integer',
     ];
 
     // ===== RELATIONS =====
 
+    // Un quiz appartient à un livre
+    public function book()
+    {
+        return $this->belongsTo(Book::class, 'id_book', 'id');
+    }
+
+    // Un quiz a plusieurs questions
     public function questions()
     {
         return $this->hasMany(Question::class, 'id_quiz', 'id_quiz')
                     ->orderBy('order_position');
     }
 
+    // Résultats des utilisateurs
     public function results()
     {
         return $this->hasMany(Resultats::class, 'id_quiz', 'id_quiz');
-    }
-
-// ===== GESTION DES LIVRES =====
-
-    public static function getBookOptions()
-    {
-        return [
-            1 => 'Harry Potter - Tome 1',
-            2 => 'Harry Potter - Tome 2',
-            3 => 'Le Seigneur des Anneaux',
-            4 => 'Game of Thrones',
-            5 => 'Les Misérables',
-            6 => '1984',
-            7 => 'Le Petit Prince'
-        ];
-    }
-
-    public function getBookNameAttribute()
-    {
-        $books = self::getBookOptions();
-        return $books[$this->id_book] ?? 'Livre inconnu';
     }
 
     // ===== SCOPES =====
@@ -83,7 +83,7 @@ class Quiz extends Model
         $levels = [
             'beginner' => 'Débutant',
             'intermediate' => 'Intermédiaire',
-            'advanced' => 'Avancé'
+            'advanced' => 'Avancé',
         ];
 
         return $levels[$this->difficulty_level] ?? $this->difficulty_level;
@@ -94,7 +94,7 @@ class Quiz extends Model
         $classes = [
             'beginner' => 'badge-success',
             'intermediate' => 'badge-warning',
-            'advanced' => 'badge-danger'
+            'advanced' => 'badge-danger',
         ];
 
         return $classes[$this->difficulty_level] ?? 'badge-secondary';
@@ -118,11 +118,9 @@ class Quiz extends Model
         $hours = floor($minutes / 60);
         $remainingMinutes = $minutes % 60;
 
-        if ($remainingMinutes === 0) {
-            return $hours . 'h';
-        }
-
-        return $hours . 'h ' . $remainingMinutes . 'min';
+        return $remainingMinutes === 0
+            ? "{$hours}h"
+            : "{$hours}h {$remainingMinutes}min";
     }
 
     // ===== STATISTIQUES =====
@@ -146,6 +144,3 @@ class Quiz extends Model
         return round($this->results()->avg('percentage') ?? 0, 1);
     }
 }
-
-
-
