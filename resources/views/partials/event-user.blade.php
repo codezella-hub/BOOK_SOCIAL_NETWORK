@@ -7,6 +7,7 @@
   flex-direction: column;
   border-radius: 14px;
   overflow: hidden;
+  width: 200px;
 }
 
 /* Cover: keep stable height and add a soft bottom fade for legibility */
@@ -263,7 +264,7 @@
         <div class="carousel-nav" id="events-dots">
           <div class="carousel-dot active" data-slide="0"></div>
           <div class="carousel-dot" data-slide="1"></div>
-          <div class="carousel-dot" data-slide="2"></div>
+          {{-- <div class="carousel-dot" data-slide="2"></div> --}}
         </div>
       </div>
 

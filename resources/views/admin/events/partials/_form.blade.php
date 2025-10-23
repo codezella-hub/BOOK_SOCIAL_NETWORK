@@ -2,6 +2,18 @@
     @csrf
     @if(($method ?? 'POST') !== 'POST') @method($method) @endif
 
+    {{-- Global validation errors --}}
+    @if ($errors->any())
+        <div class="ef-section ef-col-span" style="margin:12px 0;">
+            <div class="ef-error" style="font-weight:700;margin-bottom:6px;">Please fix the following:</div>
+            <ul class="ef-hint" style="color:#b91c1c; padding-left: 18px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="ef-card">
         <div class="ef-header">
             <h2 class="ef-title">{{ isset($event) ? 'Edit Event' : 'Create Event' }}</h2>
@@ -61,6 +73,27 @@
                     <span class="ef-label">Location</span>
                     <input class="ef-input" type="text" name="location_text" value="{{ old('location_text', $event->location_text ?? '') }}" placeholder="Address or 'Online'">
                 </label>
+                <label class="ef-field">
+  <span class="ef-label">Latitude</span>
+  <input class="ef-input" type="text" name="lat" value="{{ old('lat', $event->lat ?? '') }}" placeholder="e.g. 36.860000">
+  @error('lat')<span class="ef-error">{{ $message }}</span>@enderror
+</label>
+
+<label class="ef-field">
+  <span class="ef-label">Longitude</span>
+  <input class="ef-input" type="text" name="lng" value="{{ old('lng', $event->lng ?? '') }}" placeholder="e.g. 10.200000">
+  @error('lng')<span class="ef-error">{{ $message }}</span>@enderror
+</label>
+
+<div class="ef-col-span">
+  <button type="button"
+    class="ef-btn ef-btn-light"
+    onclick="document.querySelector('[name=lat]').value='36.86';document.querySelector('[name=lng]').value='10.20';">
+    Use Charguia 2 defaults
+  </button>
+</div>
+
+                
             </div>
         </div>
 

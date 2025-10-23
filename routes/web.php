@@ -23,16 +23,31 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\RSVPController;
 use App\Http\Controllers\TicketDownloadController;
 
+use Illuminate\Http\Request;
+use App\Services\ContentModerator;
 
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
 
+    Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/notifications/{notification}/read', [AdminDashboardController::class, 'markNotificationAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [AdminDashboardController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+    
+    // Route API pour les notifications en temps réel
+    Route::get('/notifications/api', [AdminDashboardController::class, 'getNotifications'])->name('notifications.api');
+    
     // Admin donation routes
     Route::get('/donations', [DonationController::class, 'adminIndex'])->name('donations.index');
     Route::get('/donations/{donation}', [DonationController::class, 'adminShow'])->name('donations.show');
     Route::patch('/donations/{donation}/approve', [DonationController::class, 'approve'])->name('donations.approve');
     Route::patch('/donations/{donation}/reject', [DonationController::class, 'reject'])->name('donations.reject');
+
+    // Routes admin pour les remises
+    Route::get('/remises', [App\Http\Controllers\RemiseController::class, 'index'])
+        ->name('remises.index');
+    Route::post('/remises/{id}/status', [App\Http\Controllers\RemiseController::class, 'updateStatus'])
+        ->name('remises.updateStatus');
   Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/events/create', [AdminEventController::class, 'create'])->name('events.create');
     Route::post('/events', [AdminEventController::class, 'store'])->name('events.store');
@@ -74,7 +89,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
         // Routes pour la gestion des topics avec préfixe forum
     Route::prefix('forum')->name('topics.')->group(function () {
-        Route::get('/', [ForumAdminController::class, 'index'])->name('index');
+        Route::get('/', [ForumAdminController::class, 'index'])->name('index'); // /admin/forum
         Route::get('/create', [ForumAdminController::class, 'create'])->name('create');
         Route::post('/store', [ForumAdminController::class, 'store'])->name('store');
         Route::get('/{topic}/edit', [ForumAdminController::class, 'edit'])->name('edit');
@@ -83,6 +98,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::get('/{topic}', [ForumAdminController::class, 'show'])->name('show');
     });
 
+    // Routes pour la gestion des reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ForumAdminController::class, 'indexR'])->name('index'); // /admin/reports
+        Route::get('/{report}', [ForumAdminController::class, 'showR'])->name('show');
+        Route::delete('/{report}', [ForumAdminController::class, 'destroyR'])->name('destroy');
+        Route::delete('/{report}/delete-post', [ForumAdminController::class, 'deletePost'])->name('deletePost');
+        Route::delete('/{report}/ignore', [ForumAdminController::class, 'ignore'])->name('ignore');
+    });
 
 });
 
@@ -104,26 +127,19 @@ Route::prefix('/')->name('user.')->group(function () {
 
 
         // Routes pour les posts utilisateur
-    Route::prefix('forum')->name('posts.')->group(function () {
-        Route::get('/posts', [ForumUserController::class, 'index'])->name('index');
-        Route::get('/posts/create', [ForumUserController::class, 'create'])->name('create');
-        Route::post('/posts', [ForumUserController::class, 'store'])->name('store');
-        Route::get('/posts/{post}', [ForumUserController::class, 'show'])->name('show');
-        Route::get('/posts/{post}/edit', [ForumUserController::class, 'edit'])->name('edit');
-        Route::put('/posts/{post}', [ForumUserController::class, 'update'])->name('update');
-        Route::delete('/posts/{post}', [ForumUserController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::prefix('forum')->name('comments.')->group(function () {
-        Route::post('/posts/{post}/comments', [ForumUserController::class, 'storeComment'])->name('store');
-        Route::get('/comments/{comment}/edit', [ForumUserController::class, 'editComment'])->name('edit');
-        Route::put('/comments/{comment}', [ForumUserController::class, 'updateComment'])->name('update');
-        Route::delete('/comments/{comment}', [ForumUserController::class, 'destroyComment'])->name('destroy');
-    });
-    Route::prefix('forum')->name('likes.')->group(function () {
-        Route::post('/posts/{post}/like', [ForumUserController::class, 'toggle'])->name('toggle');
-        Route::get('/posts/{post}/check-like', [ForumUserController::class, 'checkLike'])->name('check');
-    });
+// === POSTS ===
+Route::prefix('forum')->name('posts.')->group(function () {
+    Route::get('/posts', [ForumUserController::class, 'index'])->name('index');
+    Route::get('/posts/create', [ForumUserController::class, 'create'])->name('create');
+    Route::post('/posts', [ForumUserController::class, 'store'])
+        ->middleware('moderate')
+        ->name('store');
+    Route::get('/posts/{post}', [ForumUserController::class, 'show'])->name('show');
+    Route::get('/posts/{post}/edit', [ForumUserController::class, 'edit'])->name('edit');
+    Route::put('/posts/{post}', [ForumUserController::class, 'update'])
+        ->middleware('moderate')
+        ->name('update');
+    Route::delete('/posts/{post}', [ForumUserController::class, 'destroy'])->name('destroy');
 });
 // Public books routes
 Route::get('/books', [BookUserController::class, 'index'])->name('books.index');
@@ -140,6 +156,61 @@ Route::middleware('auth')->group(function () {
     Route::patch('/my-books/{book}/toggle-shareable', [BookUserController::class, 'toggleShareable'])->name('user.books.toggle-shareable');
     Route::patch('/my-books/{book}/toggle-archive', [BookUserController::class, 'toggleArchive'])->name('user.books.toggle-archive');
 });
+
+
+// === COMMENTS ===
+Route::prefix('forum')->name('comments.')->group(function () {
+    Route::post('/posts/{post}/comments', [ForumUserController::class, 'storeComment'])
+        ->middleware('moderate')
+        ->name('store');
+    Route::get('/comments/{comment}/edit', [ForumUserController::class, 'editComment'])->name('edit');
+    Route::put('/comments/{comment}', [ForumUserController::class, 'updateComment'])
+        ->middleware('moderate') 
+        ->name('update');
+    Route::delete('/comments/{comment}', [ForumUserController::class, 'destroyComment'])->name('destroy');
+    Route::post('/comments/{comment}/replies', [ForumUserController::class, 'storeReply'])
+        ->middleware('moderate')
+        ->name('reply.store');
+});
+
+
+// === LIKES ===
+Route::prefix('forum')->name('likes.')->group(function () {
+    Route::post('/posts/{post}/like', [ForumUserController::class, 'toggle'])->name('toggle');
+    Route::get('/posts/{post}/check-like', [ForumUserController::class, 'checkLike'])->name('check');
+});
+
+// === COMMENT LIKES ===
+Route::prefix('forum')->name('comment_likes.')->group(function () {
+    Route::post('/comments/{comment}/like', [ForumUserController::class, 'toggleCommentLike'])
+        ->name('toggle');            // user.comment_likes.toggle
+    Route::get('/comments/{comment}/check-like', [ForumUserController::class, 'checkCommentLike'])
+        ->name('check');             // user.comment_likes.check
+});
+
+
+// === REPORTS ===
+Route::prefix('forum')->name('reports.')->group(function () {
+    Route::post('/posts/{post}/report', [ForumUserController::class, 'storeReport'])->name('store');
+    Route::get('/posts/{post}/check-report', [ForumUserController::class, 'checkReport'])->name('check');
+});
+
+});
+
+Route::post('/moderate/live', function (Request $request, ContentModerator $moderator) {
+    $validated = $request->validate([
+        'text' => 'required|string|max:2000',
+    ]);
+
+    $res = $moderator->moderate($validated['text']);
+
+    return response()->json([
+        'clean'  => $res['clean'],
+        'toxic'  => $res['toxic'],
+        'scores' => $res['scores'],
+    ]);
+})->name('moderate.live');
+ 
 // User donation routes (requires auth)
 Route::middleware('auth')->group(function () {
     Route::resource('donations', DonationController::class)->names([
@@ -152,6 +223,13 @@ Route::middleware('auth')->group(function () {
         'destroy' => 'user.donations.destroy'
     ]);
 
+    // Routes pour les remises
+    Route::get('/donation/{id}/remise/create', [App\Http\Controllers\RemiseController::class, 'create'])
+        ->name('remise.create');
+    Route::post('/donation/{id}/remise', [App\Http\Controllers\RemiseController::class, 'store'])
+        ->name('remise.store');
+    Route::get('/remise/{id}', [App\Http\Controllers\RemiseController::class, 'show'])
+        ->name('remise.show');
 });
 // Profile (existing)
 Route::middleware('auth')->group(function () {
@@ -168,12 +246,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
 // Frontoffice event browsing
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::get('/events/nearby', [EventController::class, 'nearby'])->name('events.nearby');
+
 Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('events.show');
 
 // Authenticated interactions: RSVP and ticket download
 Route::middleware('auth')->group(function () {
     Route::post('/events/{event:slug}/rsvp', [RSVPController::class, 'store'])->name('events.rsvp');
     Route::get('/events/{event}/tickets/{ticket}/download', TicketDownloadController::class)->name('tickets.download');
+    
+    // Routes pour le chatbot IA
+    Route::get('/chatbot', [App\Http\Controllers\ChatbotController::class, 'index'])->name('chatbot.index');
+    Route::post('/chatbot/ask', [App\Http\Controllers\ChatbotController::class, 'ask'])->name('chatbot.ask');
+    Route::post('/chatbot/similar-books', [App\Http\Controllers\ChatbotController::class, 'getSimilarBooks'])->name('chatbot.similar-books');
+    Route::post('/chatbot/author-info', [App\Http\Controllers\ChatbotController::class, 'getAuthorInfo'])->name('chatbot.author-info');
+    Route::post('/chatbot/recommendations', [App\Http\Controllers\ChatbotController::class, 'getRecommendationsByGenre'])->name('chatbot.recommendations');
+    Route::get('/chatbot/donation/{donation}', [App\Http\Controllers\ChatbotController::class, 'fromDonation'])->name('chatbot.donation');
 });
 
 require __DIR__.'/auth.php';

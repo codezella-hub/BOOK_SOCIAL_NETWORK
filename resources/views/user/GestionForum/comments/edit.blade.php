@@ -4,7 +4,7 @@
 @section('content')
 <div class="forum-container">
     <div class="forum-header">
-        <h1>Edit Comment</h1>
+        <h1 class="post-title">Edit Comment</h1>
         <p>Modify your comment</p>
         <a href="{{ route('user.posts.show', $comment->post) }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i>
@@ -16,30 +16,44 @@
         <form action="{{ route('user.comments.update', $comment) }}" method="POST">
             @csrf
             @method('PUT')
-            
+
             <div class="form-group">
                 <label for="content_C" class="form-label required">Your Comment</label>
-                <textarea name="content_C" id="content_C" rows="4" class="form-control" 
-                          placeholder="Modify your comment..." 
-                          required>{{ old('content_C', $comment->content_C) }}</textarea>
+                <textarea
+                    name="content_C"
+                    id="content_C"
+                    rows="4"
+                    class="form-control"
+                    placeholder="Modify your comment..."
+                    required>{{ old('content_C', $comment->content_C) }}</textarea>
+
+                {{-- statut + aperçu live (sans modifier le textarea) --}}
+                <small id="moderation-status-comment" class="text-muted"></small>
+                <div id="moderation-preview-comment" class="moderation-preview" aria-live="polite"></div>
+
+                <div class="moderation-actions" style="margin-top:.5rem">
+                    <button type="button" id="applyCleanComment" class="btn btn-light btn-xs" disabled>
+                        Apply cleaned text
+                    </button>
+                </div>
+
                 @error('content_C')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
+
                 <div class="char-count">
-                    <span id="charCount">{{ strlen($comment->content_C) }}</span>/500 characters
+                    <span id="charCount">{{ strlen(old('content_C', $comment->content_C)) }}</span>/500 characters
                 </div>
             </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-warning">
-                    <i class="fas fa-save"></i>
-                    Save Comment
+                    <i class="fas fa-save"></i> Save Comment
                 </button>
-                <a href="{{ route('user.posts.show', $comment->post) }}" class="btn btn-secondary">
-                    Cancel
-                </a>
+                <a href="{{ route('user.posts.show', $comment->post) }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
+
     </div>
 </div>
 
@@ -56,6 +70,82 @@
             charCountComment.textContent = length;
         });
     }
+// === Live moderation for EDIT COMMENT ===
+document.addEventListener('DOMContentLoaded', () => {
+  const tx = document.getElementById('content_C');
+  if (!tx) return;
+
+  const MOD_URL  = "{{ route('moderate.live') }}";
+  const statusEl = document.getElementById('moderation-status-comment');
+  const preview  = document.getElementById('moderation-preview-comment');
+  const applyBtn = document.getElementById('applyCleanComment');
+  const csrftok  = document.querySelector('meta[name="csrf-token"]').content;
+  const charSpan = document.getElementById('charCount');
+
+  const updateCount = () => { if (charSpan) charSpan.textContent = tx.value.length; };
+  const updateApplyState = () => {
+    const clean = (preview.textContent || '').trim();
+    applyBtn.disabled = !clean || clean === tx.value;
+  };
+
+  updateCount(); updateApplyState();
+
+  let composing = false;
+  tx.addEventListener('compositionstart', () => composing = true);
+  tx.addEventListener('compositionend',   () => { composing = false; trigger(); });
+
+  let t = null, controller = null;
+  const debounce = (fn, ms=200) => (...args) => { clearTimeout(t); t=setTimeout(() => fn(...args), ms); };
+
+  const trigger = debounce(async () => {
+    if (composing) return;
+    const raw = tx.value;
+    updateCount();
+    if (!raw.trim()) { statusEl.textContent=''; preview.textContent=''; updateApplyState(); return; }
+
+    if (controller) controller.abort();
+    controller = new AbortController();
+
+    try {
+      const res = await fetch(MOD_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrftok
+        },
+        body: JSON.stringify({ text: raw }),
+        signal: controller.signal
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+
+      preview.textContent = data.clean || '';
+      statusEl.textContent = data.toxic
+        ? '⚠️ Some words will be masked upon publication.'
+        : '✓ No issues detected';
+
+      updateApplyState();
+    } catch (e) {
+      if (e.name !== 'AbortError') statusEl.textContent = '…';
+    }
+  }, 500);
+
+  tx.addEventListener('input', trigger);
+
+  applyBtn?.addEventListener('click', () => {
+    const clean = (preview.textContent || '').trim();
+    if (!clean) return;
+    tx.value = clean;
+    tx.focus();
+    tx.selectionStart = tx.selectionEnd = tx.value.length;
+    tx.dispatchEvent(new Event('input'));
+  });
+
+  // initial pass on existing content
+  tx.dispatchEvent(new Event('input'));
+});
 
 </script>
 @endsection
@@ -195,6 +285,25 @@
             justify-content: center;
         }
     }
+    .moderation-preview{
+    white-space: pre-wrap;
+    margin-top:.25rem;
+    padding:.5rem .75rem;
+    border:1px dashed #e5e7eb;
+    border-radius:.375rem;
+    color:#374151;
+    background:#fafafa;
+    font-size:.95rem;
+    }
+    .btn-light{ background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; }
+    .btn-light:hover{ background:#e5e7eb; }
+    .btn-xs{ padding:.25rem .5rem; font-size:.75rem; }
+    .post-title {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #1e293b; /* bleu-gris foncé */
+    margin-bottom: 0.25rem;
+}
 </style>
 
 @endsection

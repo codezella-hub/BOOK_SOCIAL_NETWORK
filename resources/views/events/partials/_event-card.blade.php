@@ -14,6 +14,12 @@
         • {{ $event->location_text }}
       @endif
     </p>
+    @if(isset($event->ai_score))
+  <div class="ai-score-badge" style="font-weight:bold; color:#4f46e5; font-size:0.85rem;">
+    Recommended (score: {{ number_format($event->ai_score, 3) }})
+  </div>
+@endif
+
 
     @if($event->summary)
       <p class="text-sm text-zinc-700 line-clamp-2">{{ $event->summary }}</p>

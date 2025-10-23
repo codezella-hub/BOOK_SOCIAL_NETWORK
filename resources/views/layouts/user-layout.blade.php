@@ -10,9 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
-
     @vite(['resources/css/app.css', 'resources/css/user.css'])
-
+    
+     <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
     <!-- CSS Section -->
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -43,7 +45,7 @@
             <ul class="nav-links">
                 <li><a href="{{ route('user.home') }}"><i class="fas fa-home"></i> Accueil</a></li>
 
-                <li><a href="{{ route('books.index') }}"><i class="fas fa-compass"></i> Découvrir</a></li>
+                <li><a href=""><i class="fas fa-compass"></i> Découvrir</a></li>
 
 
 
@@ -59,7 +61,7 @@
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
 
                         @auth
-                        <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
+                        <a href=""><i class="fas fa-book"></i> Mes Livres</a>
                        <a href="{{ route('user.quiz.index') }}"><i class="fas fa-book"></i> Quiz</a>
                         @endauth
 

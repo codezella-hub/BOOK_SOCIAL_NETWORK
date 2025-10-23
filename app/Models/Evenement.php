@@ -10,10 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Evenement extends Model
 {
-    protected $fillable = [
-        'user_id','title','slug','summary','description','starts_at','ends_at','timezone',
-        'location_text','status','visibility','capacity','cover_image_path','published_at','cancelled_at',
-    ];
+    // app/Models/Evenement.php
+protected $fillable = [
+    'user_id','title','slug','summary','description','starts_at','ends_at','timezone',
+    'location_text','status','visibility','capacity','cover_image_path','published_at','cancelled_at',
+    'lat','lng', 
+];
+
 
     protected $casts = [
         'starts_at' => 'datetime',
@@ -56,4 +59,21 @@ class Evenement extends Model
 
     public function isPublished(): bool { return $this->status === 'published'; }
     public function isCancelled(): bool { return $this->status === 'cancelled'; }
+public function scopeFuture(Builder $q): Builder
+{
+    return $q->where('starts_at', '>=', now());
+}
+
+public function scopeWithinRadius(Builder $q, float $lat, float $lng, float $radiusKm): Builder
+{
+    // Haversine distance in kilometers
+    $haversine = "(6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat))))";
+
+    return $q->whereNotNull('lat')
+             ->whereNotNull('lng')
+             ->select('*')
+             ->selectRaw("$haversine as distance_km", [$lat, $lng, $lat])
+             ->whereRaw("$haversine <= ?", [$lat, $lng, $lat, $radiusKm])
+             ->orderBy('distance_km');
+}
 }

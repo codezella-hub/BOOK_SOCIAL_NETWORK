@@ -22,7 +22,13 @@ class EvenementPolicy
 
     public function create(User $user): bool { return true; }
 
-    public function update(User $user, Evenement $event): bool { return $user->id === $event->user_id; }
+   public function update(User $user, Evenement $event): bool
+{
+    if ($user->hasRole('admin')) {
+        return true;
+    }
+    return $user->id === $event->user_id;
+}
 
     public function delete(User $user, Evenement $event): bool { return $user->id === $event->user_id; }
 

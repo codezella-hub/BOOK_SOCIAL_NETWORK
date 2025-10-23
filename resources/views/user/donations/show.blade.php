@@ -117,6 +117,9 @@
                         <a href="{{ route('user.donations.edit', $donation) }}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> Modifier la donation
                         </a>
+                        <a href="{{ route('chatbot.donation', $donation->id) }}" class="btn btn-ai">
+                            <i class="fas fa-robot"></i> Discuter avec l'IA
+                        </a>
                         <form action="{{ route('user.donations.destroy', $donation) }}" method="POST" class="inline" 
                               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette donation ?')">
                             @csrf
@@ -126,6 +129,38 @@
                             </button>
                         </form>
                     </div>
+                @elseif($donation->status === 'approved')
+                    @if(!$donation->remise)
+                        <div class="action-buttons">
+                            <a href="{{ route('remise.create', $donation->id) }}" class="btn btn-success">
+                                <i class="fas fa-handshake"></i> Planifier la remise
+                            </a>
+                            <a href="{{ route('chatbot.donation', $donation->id) }}" class="btn btn-ai">
+                                <i class="fas fa-robot"></i> Discuter avec l'IA
+                            </a>
+                        </div>
+                    @else
+                        <div class="action-buttons">
+                            <a href="{{ route('chatbot.donation', $donation->id) }}" class="btn btn-ai">
+                                <i class="fas fa-robot"></i> Discuter avec l'IA
+                            </a>
+                        </div>
+                        <div class="remise-info">
+                            <h3><i class="fas fa-handshake"></i> Remise planifiée</h3>
+                            <div class="remise-details">
+                                <p><strong>Date :</strong> {{ $donation->remise->date_rendez_vous_formatted }}</p>
+                                <p><strong>Lieu :</strong> {{ $donation->remise->lieu }}</p>
+                                <p><strong>Statut :</strong> 
+                                    <span class="status-badge status-{{ $donation->remise->statut }}">
+                                        {{ $donation->remise->statut_label }}
+                                    </span>
+                                </p>
+                                @if($donation->remise->admin)
+                                    <p><strong>Admin responsable :</strong> {{ $donation->remise->admin->name }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -409,6 +444,139 @@
 
 .btn-outline:hover {
     background: #3498db;
+    color: white;
+}
+
+.btn-success {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #229954;
+    transform: translateY(-1px);
+}
+
+.btn-ai {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-ai:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.remise-info {
+    background: #e8f5e8;
+    border: 1px solid #27ae60;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.remise-info h3 {
+    color: #27ae60;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+}
+
+.remise-details p {
+    margin: 0.5rem 0;
+    color: #2c3e50;
+}
+
+.remise-details .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-en_attente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-prevu {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-effectue {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-annule {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.ai-suggestion-box {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border: 1px solid #e1bee7;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.ai-suggestion-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ai-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.ai-text {
+    flex: 1;
+}
+
+.ai-text h4 {
+    margin: 0 0 0.5rem 0;
+    color: #4a148c;
+    font-size: 1.1rem;
+}
+
+.ai-text p {
+    margin: 0;
+    color: #6a1b9a;
+    font-size: 0.9rem;
+}
+
+.btn-ai-compact {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-ai-compact:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     color: white;
 }
 

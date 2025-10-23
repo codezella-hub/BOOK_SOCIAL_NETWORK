@@ -1,6 +1,74 @@
 @extends('layouts.admin-layout')
 
 @section('title', 'Events')
+@section('name', 'content')
+
+
+
+@section('styles')
+<style>
+.pagination {
+  display: flex;
+  list-style: none;
+  padding-left: 0;
+  justify-content: center;
+  gap: 8px;
+  font-family: Arial, sans-serif;
+}
+
+.pagination li {
+  display: block;
+}
+
+.pagination li a,
+.pagination li span {
+  display: inline-block;
+  min-width: 36px;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  color: #374151; /* Gray-700 */
+  background: #f9fafb; /* Gray-50 Background */
+  border-radius: 9999px; /* Full rounded */
+  border: 1px solid #e5e7eb; /* Gray-200 border */
+  text-decoration: none;
+  font-weight: 600;
+  user-select: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.pagination li a:hover {
+  color: #111827; /* Gray-900 */
+  background: #e5e7eb; /* Gray-200 Hover Bg */
+  border-color: #d1d5db;
+}
+
+.pagination li.active span,
+.pagination li.active a {
+  background: #1b4ed9; /* Blue-700 */
+  color: white;
+  border-color: #1e40af; /* Blue-800 */
+  cursor: default;
+}
+
+.pagination li.disabled span,
+.pagination li.disabled a {
+  cursor: not-allowed;
+  color: #9ca3af; /* Gray-400 */
+  background: transparent;
+  border-color: transparent;
+}
+
+.pagination li svg {
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+</style>
+@endsection
+
 
 @section('content')
 <div class="admin-section">
@@ -97,7 +165,11 @@
     </div>
 
     <div style="margin-top:24px">
-        {{ $events->onEachSide(1)->links() }}
+        {{-- {{ $events->onEachSide(1)->links() }} --}}
+        {{-- {{ $events->onEachSide(1)->links('pagination::tailwind') }} --}}
+        {{ $events->onEachSide(1)->links('pagination::bootstrap-4') }}
+
+
     </div>
     @endif
 </div>
