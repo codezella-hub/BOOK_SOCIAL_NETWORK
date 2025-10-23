@@ -18,7 +18,8 @@ class Question extends Model
         'option_d',
         'correct_answer',
         'points',
-        'order_position'
+        'order_position',
+        'explanation'
     ];
 
     protected $casts = [

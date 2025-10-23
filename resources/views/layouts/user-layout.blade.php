@@ -9,20 +9,20 @@
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-
-
+    <!-- Vite CSS -->
     @vite(['resources/css/app.css', 'resources/css/user.css'])
 
-    <!-- CSS Section -->
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
- 
-    <style>
 
-</style>
+    <!-- Styles personnalisés -->
+    <style></style>
+
     @stack('styles')
-
     @yield('styles')
+
+    <!-- ✅ Livewire Styles -->
+    @livewireStyles
 </head>
 <body>
 <!-- Bande de bienvenue -->
@@ -40,50 +40,45 @@
                 <i class="fas fa-book-open logo-icon"></i>
                 SocialBook
             </div>
+
             <ul class="nav-links">
                 <li><a href="{{ route('user.home') }}"><i class="fas fa-home"></i> Accueil</a></li>
-
                 <li><a href="{{ route('books.index') }}"><i class="fas fa-compass"></i> Découvrir</a></li>
-
-
-
                 <li><a href="{{ route('user.posts.index') }}"><i class="fas fa-comments"></i> Forum</a></li>
-
                 <li><a href="#"><i class="fas fa-users"></i> Communauté</a></li>
+
                 @auth
                     <li><a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Donations</a></li>
                 @endauth
+
                 <li class="dropdown">
                     <a href="#"><i class="fas fa-ellipsis-h"></i> Plus <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-content">
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
-
                         @auth
-                        <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
-                       <a href="{{ route('user.quiz.index') }}"><i class="fas fa-book"></i> Quiz</a>
+   <a href="{{ route('user.books.index') }}"><i class="fas fa-book"></i> Mes Livres</a>
+
+                            <a href="{{ route('user.quiz.index') }}"><i class="fas fa-book"></i> Quiz</a>
                         @endauth
-
-                       
-
-                        <a href="/#events">Events</a>
-
+                        <a href="/#events"><i class="fas fa-calendar"></i> Événements</a>
                         <a href="#"><i class="fas fa-question-circle"></i> Aide</a>
                         <a href="#"><i class="fas fa-info-circle"></i> À propos</a>
                     </div>
                 </li>
             </ul>
+
             <div class="nav-icons">
                 <div class="icon-btn" id="search-btn">
                     <i class="fas fa-search"></i>
                 </div>
-
 
                 @auth
                     <div class="icon-btn" id="notification-btn">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">3</span>
                     </div>
-                    <!-- Utilisateur connecté - Afficher l'avatar et le menu déroulant -->
+
+                    <!-- Utilisateur connecté -->
                     <div class="user-dropdown">
                         <div class="user-avatar">
                             <i class="fas fa-user"></i>
@@ -93,12 +88,16 @@
                             <a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Mes Donations</a>
                             <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
 
-                            <!-- Item Admin Panel conditionnel avec Spatie Permission -->
                             @if(auth()->user()->hasRole('admin'))
                                 <a href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Admin Panel</a>
                             @endif
 
-                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <a href="{{ route('user.quiz.history') }}">
+                                <i class="fa fa-history me-2 text-primary"></i> Historique Quiz
+                            </a>
+
+                            <a href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i> Déconnexion
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -107,7 +106,7 @@
                         </div>
                     </div>
                 @else
-                    <!-- Utilisateur non connecté - Afficher le bouton login -->
+                    <!-- Utilisateur non connecté -->
                     <div class="auth-buttons">
                         <a href="{{ route('login') }}" class="btn btn-outline login-btn">
                             <i class="fas fa-sign-in-alt"></i> Connexion
@@ -118,6 +117,7 @@
                     </div>
                 @endauth
             </div>
+
             <div class="menu-toggle">
                 <i class="fas fa-bars"></i>
             </div>
@@ -153,7 +153,7 @@
     </div>
 </div>
 
-<!-- Notification Overlay -->
+<!-- Notifications -->
 <div class="notification-overlay" id="notification-overlay">
     <div class="notification-container">
         <div class="notification-header">
@@ -162,27 +162,21 @@
         </div>
         <div class="notification-list">
             <div class="notification-item">
-                <div class="notification-icon">
-                    <i class="fas fa-user-plus"></i>
-                </div>
+                <div class="notification-icon"><i class="fas fa-user-plus"></i></div>
                 <div class="notification-content">
                     <p><strong>Marie Dupont</strong> a rejoint votre club de lecture</p>
                     <span class="notification-time">Il y a 2 heures</span>
                 </div>
             </div>
             <div class="notification-item">
-                <div class="notification-icon">
-                    <i class="fas fa-book"></i>
-                </div>
+                <div class="notification-icon"><i class="fas fa-book"></i></div>
                 <div class="notification-content">
                     <p>Votre livre "<strong>L'Étranger</strong>" a reçu un nouvel avis</p>
                     <span class="notification-time">Il y a 5 heures</span>
                 </div>
             </div>
             <div class="notification-item">
-                <div class="notification-icon">
-                    <i class="fas fa-calendar"></i>
-                </div>
+                <div class="notification-icon"><i class="fas fa-calendar"></i></div>
                 <div class="notification-content">
                     <p>Nouvel événement: Club de lecture sur la science-fiction</p>
                     <span class="notification-time">Il y a 1 jour</span>
@@ -195,7 +189,7 @@
     </div>
 </div>
 
-<!-- Main Content Section -->
+<!-- Contenu principal -->
 <main>
     @yield('content')
 </main>
@@ -249,13 +243,12 @@
     </div>
 </footer>
 
-<!-- JavaScript Section -->
+<!-- Scripts -->
 @vite(['resources/js/user.js'])
-
-<script>
-</script>
-
 @stack('scripts')
 @yield('scripts')
+
+<!-- ✅ Livewire Scripts -->
+@livewireScripts
 </body>
 </html>
