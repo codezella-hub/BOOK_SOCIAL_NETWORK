@@ -34,7 +34,12 @@ class AdminEventController extends Controller
     public function store(StoreEvenementRequest $request)
     {
         $data = $request->validated();
+        $data['status'] = $data['status'] ?? 'draft';        // or 'published' if you want immediate visibility
+    $data['timezone'] = $data['timezone'] ?? 'UTC';      // optional fallback
         $data['user_id'] = $request->user()->id;
+        if ($request->hasFile('cover_image')) {
+        $data['cover_image_path'] = $request->file('cover_image')->store('events', 'public');
+    }
 
         $event = Evenement::create($data);
 
@@ -48,11 +53,24 @@ class AdminEventController extends Controller
     }
 
     public function update(UpdateEvenementRequest $request, Evenement $event)
-    {
-       // $this->authorize('update', $event);
-        $event->update($request->validated());
-        return back()->with('status', 'Event updated.');
+{
+    $this->authorize('update', $event); // Enforce authorization
+
+    $data = $request->validated();
+// Optional: keep existing status if not provided; or default to draft/published
+    if (!array_key_exists('status', $data) || is_null($data['status'])) {
+        $data['status'] = $event->status ?? 'draft';
     }
+    if ($request->hasFile('cover_image')) {
+        // Optionally delete old image file here if needed
+        $data['cover_image_path'] = $request->file('cover_image')->store('events', 'public');
+    }
+
+    $event->update($data);
+
+    return back()->with('status', 'Event updated.');
+}
+
 
     public function publish(Evenement $event)
     {

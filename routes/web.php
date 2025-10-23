@@ -168,6 +168,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
 // Frontoffice event browsing
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::get('/events/nearby', [EventController::class, 'nearby'])->name('events.nearby');
+
 Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('events.show');
 
 // Authenticated interactions: RSVP and ticket download
