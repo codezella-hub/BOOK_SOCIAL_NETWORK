@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Share notifications data with the admin dashboard layout
-        View::composer('admin.dashboard', function ($view) {
+        View::composer(['layouts.admin-layout', 'admin.*'], function ($view) {
             if (Auth::check()) {
                 $user = Auth::user();
                 

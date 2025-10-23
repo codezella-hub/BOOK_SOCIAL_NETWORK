@@ -5,7 +5,7 @@
 @section('content')
 <div class="forum-container">
     <div class="forum-header">
-        <h1>Edit Post</h1>
+        <h1 class="post-title">Edit Post</h1>
         <p>Modify the content of your post</p>
         <a href="{{ route('user.posts.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Back
@@ -288,6 +288,12 @@ document.addEventListener('DOMContentLoaded', () => {
   .post-form-container{ padding:1.5rem; }
   .form-actions{ flex-direction:column; }
   .btn{ width:100%; justify-content:center; }
+}
+.post-title {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #1e293b; /* bleu-gris foncé */
+    margin-bottom: 0.25rem;
 }
 </style>
 @endsection

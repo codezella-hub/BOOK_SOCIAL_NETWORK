@@ -4,7 +4,7 @@
 @section('content')
 <div class="forum-container">
     <div class="forum-header">
-        <h1>Create a new post</h1>
+        <h1 class="post-title">Create a New Post</h1>
         <p>Share your thoughts with the community</p>
         <a href="{{ route('user.posts.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i>
@@ -222,6 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 @section('styles')
 <style>
+    .post-title {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #1e293b; /* bleu-gris foncé */
+    margin-bottom: 0.25rem;
+    }
     .btn-light { background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; }
     .btn-light:hover { background:#e5e7eb; }
     .btn-xs { padding:.25rem .5rem; font-size:.75rem; }

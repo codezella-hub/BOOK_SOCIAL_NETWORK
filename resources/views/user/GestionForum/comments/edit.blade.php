@@ -4,7 +4,7 @@
 @section('content')
 <div class="forum-container">
     <div class="forum-header">
-        <h1>Edit Comment</h1>
+        <h1 class="post-title">Edit Comment</h1>
         <p>Modify your comment</p>
         <a href="{{ route('user.posts.show', $comment->post) }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i>
@@ -298,6 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
     .btn-light{ background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; }
     .btn-light:hover{ background:#e5e7eb; }
     .btn-xs{ padding:.25rem .5rem; font-size:.75rem; }
+    .post-title {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #1e293b; /* bleu-gris foncé */
+    margin-bottom: 0.25rem;
+}
 </style>
 
 @endsection

@@ -6,7 +6,7 @@
     {{-- HERO (simple, n’interfère pas avec le header) --}}
     <div class="forum-hero">
         <div class="hero-text">
-            <h1>Forum Discussions</h1>
+            <h1 class="post-title">Forum Discussions</h1>
             <p>Share your thoughts and discuss with the community</p>
         </div>
         <a href="{{ route('user.posts.create') }}" class="btn btn-primary">
@@ -614,7 +614,12 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
     from {opacity: 0; transform: scale(.95);}
     to {opacity: 1; transform: scale(1);}
 }
-
+.post-title {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #1e293b; /* bleu-gris foncé */
+    margin-bottom: 0.25rem;
+}
 </style>
 @endsection
 

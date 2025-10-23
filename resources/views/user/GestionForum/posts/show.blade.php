@@ -6,7 +6,7 @@
     {{-- HEADER --}}
     <div class="forum-header">
         <div class="header-content">
-            <h1>Post Details</h1>
+            <h1 class="post-title">Post Details</h1>
             <p>View the complete information of the post</p>
         </div>
 
@@ -135,7 +135,7 @@
                                                 </a>
                                                 <form action="{{ route('user.comments.destroy', $comment) }}" method="POST" class="menu-item-form">
                                                     @csrf @method('DELETE')
-                                                    <button type="submit" class="menu-item delete-btn" onclick="return confirm('Delete this comment?')">
+                                                    <button type="submit" class="menu-item delete-btn" >
                                                         <i class="fas fa-trash"></i> Delete
                                                     </button>
                                                 </form>
@@ -349,6 +349,22 @@
     </div>
 </div>
 
+<div id="deleteCommentModal" class="delete-modal">
+    <div class="delete-modal-content">
+        <div class="delete-modal-header">
+            <h3><i class="fas fa-exclamation-triangle"></i> Confirm Comment Deletion</h3>
+            <button class="close-delete" onclick="closeCommentDeleteModal()">&times;</button>
+        </div>
+        <div class="delete-modal-body">
+            <p>Are you sure you want to delete this comment? This action cannot be undone.</p>
+        </div>
+        <div class="delete-modal-footer">
+            <button class="btn btn-secondary" onclick="closeCommentDeleteModal()">Cancel</button>
+            <button class="btn btn-danger" id="confirmCommentDeleteBtn">Delete</button>
+        </div>
+    </div>
+</div>
+
 @section('scripts')
 <script>
 /* ===== post/comment menu toggle ===== */
@@ -495,11 +511,13 @@ let deleteForm = null;
 
 document.querySelectorAll('.menu-item-form').forEach(form => {
     const deleteBtn = form.querySelector('.delete-btn');
-    deleteBtn.addEventListener('click', e => {
-        e.preventDefault();
-        deleteForm = form;
-        openDeleteModal();
-    });
+    if (deleteBtn && form.action.includes('/posts/')) { // seulement pour les posts
+        deleteBtn.addEventListener('click', e => {
+            e.preventDefault();
+            deleteForm = form;
+            openDeleteModal();
+        });
+    }
 });
 
 function openDeleteModal() {
@@ -530,6 +548,36 @@ if (dangerDeleteBtn) {
         openDeleteModal();
     });
 }
+
+let commentDeleteForm = null;
+
+document.querySelectorAll('.menu-item-form').forEach(form => {
+    const deleteBtn = form.querySelector('.delete-btn');
+    if (deleteBtn && form.action.includes('/comments/')) { // seulement pour les commentaires
+        deleteBtn.addEventListener('click', e => {
+            e.preventDefault();
+            commentDeleteForm = form;
+            openCommentDeleteModal();
+        });
+    }
+});
+
+function openCommentDeleteModal() {
+    const modal = document.getElementById('deleteCommentModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCommentDeleteModal() {
+    const modal = document.getElementById('deleteCommentModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    commentDeleteForm = null;
+}
+
+document.getElementById('confirmCommentDeleteBtn').addEventListener('click', () => {
+    if (commentDeleteForm) commentDeleteForm.submit();
+});
 
 </script>
 @endsection
@@ -762,6 +810,11 @@ if (dangerDeleteBtn) {
     from {opacity: 0; transform: scale(.95);}
     to {opacity: 1; transform: scale(1);}
 }
-
+.post-title {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #1e293b; /* bleu-gris foncé */
+    margin-bottom: 0.25rem;
+}
 </style>
 @endsection
