@@ -7,9 +7,14 @@
     <div class="container">
         <div class="page-header">
             <h1><i class="fas fa-heart"></i> Mes Donations de Livres</h1>
-            <a href="{{ route('user.donations.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Donner un Livre
-            </a>
+            <div class="header-actions">
+                <a href="{{ route('chatbot.index') }}" class="btn btn-ai">
+                    <i class="fas fa-robot"></i> Assistant IA Livres
+                </a>
+                <a href="{{ route('user.donations.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Donner un Livre
+                </a>
+            </div>
         </div>
 
         @if(session('success'))
@@ -109,6 +114,12 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
 }
 
 .page-header h1 {
@@ -281,6 +292,19 @@
     font-size: 0.875rem;
 }
 
+.btn-ai {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.btn-ai:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -316,6 +340,17 @@
         flex-direction: column;
         gap: 1rem;
         text-align: center;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    .header-actions .btn {
+        width: 100%;
+        justify-content: center;
     }
 
     .page-header h1 {

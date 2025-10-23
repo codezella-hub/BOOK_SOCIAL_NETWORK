@@ -48,6 +48,14 @@ class Donation extends Model
     }
 
     /**
+     * Get the remise for this donation
+     */
+    public function remise(): HasOne
+    {
+        return $this->hasOne(Remise::class);
+    }
+
+    /**
      * Scope to get only pending donations
      */
     public function scopePending($query)

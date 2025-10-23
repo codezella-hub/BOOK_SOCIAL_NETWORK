@@ -33,6 +33,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/donations/{donation}', [DonationController::class, 'adminShow'])->name('donations.show');
     Route::patch('/donations/{donation}/approve', [DonationController::class, 'approve'])->name('donations.approve');
     Route::patch('/donations/{donation}/reject', [DonationController::class, 'reject'])->name('donations.reject');
+
+    // Routes admin pour les remises
+    Route::get('/remises', [App\Http\Controllers\RemiseController::class, 'index'])
+        ->name('remises.index');
+    Route::post('/remises/{id}/status', [App\Http\Controllers\RemiseController::class, 'updateStatus'])
+        ->name('remises.updateStatus');
   Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/events/create', [AdminEventController::class, 'create'])->name('events.create');
     Route::post('/events', [AdminEventController::class, 'store'])->name('events.store');
@@ -152,6 +158,13 @@ Route::middleware('auth')->group(function () {
         'destroy' => 'user.donations.destroy'
     ]);
 
+    // Routes pour les remises
+    Route::get('/donation/{id}/remise/create', [App\Http\Controllers\RemiseController::class, 'create'])
+        ->name('remise.create');
+    Route::post('/donation/{id}/remise', [App\Http\Controllers\RemiseController::class, 'store'])
+        ->name('remise.store');
+    Route::get('/remise/{id}', [App\Http\Controllers\RemiseController::class, 'show'])
+        ->name('remise.show');
 });
 // Profile (existing)
 Route::middleware('auth')->group(function () {
@@ -176,6 +189,14 @@ Route::get('/events/{event:slug}', [EventController::class, 'show'])->name('even
 Route::middleware('auth')->group(function () {
     Route::post('/events/{event:slug}/rsvp', [RSVPController::class, 'store'])->name('events.rsvp');
     Route::get('/events/{event}/tickets/{ticket}/download', TicketDownloadController::class)->name('tickets.download');
+    
+    // Routes pour le chatbot IA
+    Route::get('/chatbot', [App\Http\Controllers\ChatbotController::class, 'index'])->name('chatbot.index');
+    Route::post('/chatbot/ask', [App\Http\Controllers\ChatbotController::class, 'ask'])->name('chatbot.ask');
+    Route::post('/chatbot/similar-books', [App\Http\Controllers\ChatbotController::class, 'getSimilarBooks'])->name('chatbot.similar-books');
+    Route::post('/chatbot/author-info', [App\Http\Controllers\ChatbotController::class, 'getAuthorInfo'])->name('chatbot.author-info');
+    Route::post('/chatbot/recommendations', [App\Http\Controllers\ChatbotController::class, 'getRecommendationsByGenre'])->name('chatbot.recommendations');
+    Route::get('/chatbot/donation/{donation}', [App\Http\Controllers\ChatbotController::class, 'fromDonation'])->name('chatbot.donation');
 });
 
 require __DIR__.'/auth.php';
