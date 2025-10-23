@@ -47,7 +47,7 @@
             <ul class="nav-links">
                 <li><a href="{{ route('user.home') }}"><i class="fas fa-home"></i> Accueil</a></li>
 
-                <li><a href="{{ route('books.index') }}"><i class="fas fa-compass"></i> Découvrir</a></li>
+                <li><a href=""><i class="fas fa-compass"></i> Découvrir</a></li>
 
 
 
@@ -63,7 +63,7 @@
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
 
                         @auth
-                        <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
+                        <a href=""><i class="fas fa-book"></i> Mes Livres</a>
                        <a href="{{ route('user.quiz.index') }}"><i class="fas fa-book"></i> Quiz</a>
                         @endauth
 
