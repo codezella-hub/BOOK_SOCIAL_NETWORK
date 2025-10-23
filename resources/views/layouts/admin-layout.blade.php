@@ -13,77 +13,79 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <!-- CSS Section -->
-    @vite(['resources/css/admin.css'])
-    <style>
-    </style>
+    {{-- @vite(['resources/css/admin.css']) --}}
+     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 
-    @yield('styles')
-</head>
-<body>
-<div class="admin-container">
-    <!-- Sidebar -->
-    <div class="admin-sidebar">
-        <div class="admin-brand">
-            <!-- Logo Social Book Network -->
-            <span>Admin Panel</span>
-        </div>
-        <!-- Dans votre sidebar, remplacez une des sections par : -->
+     <style>
+     </style>
+
+     @yield('styles')
+ </head>
+ <body>
+ <div class="admin-container">
+     <!-- Sidebar -->
+     <div class="admin-sidebar">
+         <div class="admin-brand">
+             <!-- Logo Social Book Network -->
+             <span>Admin Panel</span>
+         </div>
+         <!-- Dans votre sidebar, remplacez une des sections par : -->
 
 
-        <ul class="admin-menu">
-            <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <a href="{{ route('admin.dashboard') }}">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="{{ request()->routeIs('admin.donations.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.donations.index') }}">
-                    <i class="fas fa-heart"></i>
-                    <span>Donations</span>
-                </a>
-            </li>
-            <li class="#">
-                <a href="#">
-                    <i class="fas fa-book"></i>
-                    <span>Books</span>
-                </a>
-            </li>
-            <li class="#">
-                <a href="#">
-                    <i class="fas fa-users"></i>
-                    <span>Users</span>
-                </a>
-            </li>
+         <ul class="admin-menu">
+             <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                 <a href="{{ route('admin.dashboard') }}">
+                     <i class="fas fa-tachometer-alt"></i>
+                     <span>Dashboard</span>
+                 </a>
+             </li>
+             <li class="{{ request()->routeIs('admin.donations.*') ? 'active' : '' }}">
+                 <a href="{{ route('admin.donations.index') }}">
+                     <i class="fas fa-heart"></i>
+                     <span>Donations</span>
+                 </a>
+             </li>
+             <li class="#">
+                 <a href="#">
+                     <i class="fas fa-book"></i>
+                     <span>Books</span>
+                 </a>
+             </li>
+             <li class="#">
+                 <a href="#">
+                     <i class="fas fa-users"></i>
+                     <span>Users</span>
+                 </a>
+             </li>
 
-            <li class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.categories.index') }}">
-                    <i class="fas fa-tags"></i>
-                    <span>Categories</span>
-                </a>
-            </li>
-            <!-- Dans admin.blade.php -->
-            <li class="{{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.books.index') }}">
-                    <i class="fas fa-book"></i>
-                    <span>Books</span>
-                </a>
-            <li class="{{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.topics.index') }}">
-                    <i class="fas fa-comments"></i>
-                    <span>Forum Management</span>
-                </a>
-            </li>
-            <li class="#">
-                <a href="#">
-                    <i class="fas fa-comments"></i>
-                    <span>Reviews</span>
+             <li class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                 <a href="{{ route('admin.categories.index') }}">
+                     <i class="fas fa-tags"></i>
+                     <span>Categories</span>
+                 </a>
+             </li>
+             <!-- Dans admin.blade.php -->
+             <li class="{{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
+                 <a href="{{ route('admin.books.index') }}">
+                     <i class="fas fa-book"></i>
+                     <span>Books</span>
+                 </a>
+             <li class="{{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
+                 <a href="{{ route('admin.topics.index') }}">
+                     <i class="fas fa-comments"></i>
+                     <span>Forum Management</span>
+                 </a>
+             </li>
+             <li class="#">
+                 <a href="#">
+                     <i class="fas fa-comments"></i>
+                     <span>Reviews</span>
 
-                </a>
-            </li>
-            {{-- <li class="#">
-                <flux:navlist.item icon="calendar" :href="route('admin.events.index')" :current="request()->routeIs('admin.events.*')" wire:navigate>Events1</flux:navlist.item>
-            </li> --}}
+                 </a>
+             </li>
+             {{-- <li class="#">
+                 <flux:navlist.item icon="calendar" :href="route('admin.events.index')" :current="request()->routeIs('admin.events.*')" wire:navigate>Events1</flux:navlist.item>
+             </li> --}}
             <li class="#">
                 <a href="{{ route('admin.events.index') }}" class="{{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar"></i>
@@ -196,7 +198,8 @@
 </div>
 
 <!-- JavaScript Section -->
-@vite(['resources/js/admin.js'])
+{{-- @vite(['resources/js/admin.js']) --}}
+<script src="{{ asset('js/admin.js') }}"></script>
 @yield('scripts')
 </body>
 </html>

@@ -3,7 +3,7 @@
 @section('title', 'Mon Profil - Social Book Network')
 
 @section('styles')
-    @vite(['resources/css/profile.css'])
+    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
 @endsection
 
 @section('content')
@@ -108,5 +108,5 @@
 @endsection
 
 @section('scripts')
-    @vite(['resources/js/profile.js'])
+    <script src="{{ asset('js/profile.js') }}"></script>
 @endsection

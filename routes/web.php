@@ -3,8 +3,10 @@
 use App\Http\Controllers\Admin\AdminBookController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\BookTransactionUserController;
 use App\Http\Controllers\BookUserController;
 use App\Http\Controllers\DonationController;
+use App\Http\Controllers\FeedbackBookController;
 use App\Http\Controllers\ForumAdminController;
 use App\Http\Controllers\ForumUserController;
 use App\Http\Controllers\HomeController;
@@ -163,7 +165,7 @@ Route::middleware('auth')->group(function () {
 
 // Admin event management (requires auth)
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-  
+
 });
 
 // Frontoffice event browsing
@@ -176,5 +178,37 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/{event}/tickets/{ticket}/download', TicketDownloadController::class)->name('tickets.download');
 });
 
+// Routes pour les transactions de livres
+Route::middleware('auth')->group(function () {
+
+    Route::post('/books/{book}/borrow-request', [BookTransactionUserController::class, 'borrowRequest'])->name('user.books.borrow-request');
+
+
+    Route::get('/my-borrowing-history', [BookTransactionUserController::class, 'myBorrowingHistory'])->name('user.books.borrowing-history');
+
+
+    Route::get('/my-lending-requests', [BookTransactionUserController::class, 'myLendingRequests'])->name('user.books.lending-requests');
+
+
+    Route::patch('/transactions/{transaction}/approve', [BookTransactionUserController::class, 'approveRequest'])->name('user.transactions.approve');
+    Route::patch('/transactions/{transaction}/reject', [BookTransactionUserController::class, 'rejectRequest'])->name('user.transactions.reject');
+    Route::patch('/transactions/{transaction}/mark-borrowed', [BookTransactionUserController::class, 'markAsBorrowed'])->name('user.transactions.mark-borrowed');
+    Route::patch('/transactions/{transaction}/mark-returned', [BookTransactionUserController::class, 'markAsReturned'])->name('user.transactions.mark-returned');
+    Route::patch('/transactions/{transaction}/confirm-return', [BookTransactionUserController::class, 'confirmReturn'])->name('user.transactions.confirm-return');
+    Route::delete('/transactions/{transaction}/cancel', [BookTransactionUserController::class, 'cancelRequest'])->name('user.transactions.cancel');
+});
+
+
+Route::prefix('feedback')->name('user.feedback.')->group(function () {
+    Route::get('/transaction/{transaction}/create', [FeedbackBookController::class, 'create'])->name('create');
+    Route::post('/transaction/{transaction}', [FeedbackBookController::class, 'store'])->name('store');
+    Route::get('/{feedback}/edit', [FeedbackBookController::class, 'edit'])->name('edit');
+    Route::put('/{feedback}', [FeedbackBookController::class, 'update'])->name('update');
+    Route::delete('/{feedback}', [FeedbackBookController::class, 'destroy'])->name('destroy');
+    Route::get('/can-give/{transaction}', [FeedbackBookController::class, 'canGiveFeedback'])->name('can-give');
+});
+
+// Route publique pour voir les feedbacks d'un livre
+Route::get('/books/{book}/feedbacks', [FeedbackBookController::class, 'index'])->name('books.feedbacks');
 require __DIR__.'/auth.php';
 
