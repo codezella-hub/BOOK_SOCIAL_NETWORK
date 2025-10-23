@@ -3,19 +3,26 @@
 @section('title', $post->title)
 @section('content')
 <div class="forum-container">
+    {{-- HEADER --}}
     <div class="forum-header">
         <div class="header-content">
             <h1>Post Details</h1>
             <p>View the complete information of the post</p>
         </div>
-        <div class="header-actions">
-            <a href="{{ route('user.posts.edit', $post) }}" class="btn btn-warning">
-                <i class="fas fa-edit"></i>
-                Edit
-            </a>
-            <a href="{{ route('user.posts.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i>
-                Back
+
+        <div class="page-actions" role="toolbar" aria-label="Post actions">
+            @if($post->created_by == auth()->id())
+                <a href="{{ route('user.posts.edit', $post) }}"
+                   class="btn-action btn-edit" title="Edit this post">
+                    <i class="fas fa-edit" aria-hidden="true"></i>
+                    <span class="label">Edit</span>
+                </a>
+            @endif
+
+            <a href="{{ route('user.posts.index') }}"
+               class="btn-action btn-back" title="Back to posts">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                <span class="label">Back</span>
             </a>
         </div>
     </div>
@@ -28,20 +35,51 @@
     @endif
 
     <div class="post-detail-container">
-        <!-- Post Principal -->
+        {{-- ===== MAIN POST ===== --}}
         <div class="main-post">
             <div class="post-header">
                 <div class="user-info">
                     <div class="user-avatar">
                         <i class="fas fa-user"></i>
                     </div>
+
                     <div class="user-details">
-                        <h3>{{ $post->user->name ?? 'Utilisateur' }}</h3>
-                        <span class="post-time">
-                            {{ $post->P_created_at->diffForHumans() }}
-                            • in <span class="topic-badge">{{ $post->topic->title }}</span>
+                        <div class="user-top">
+                            <h3>{{ $post->user->name ?? 'Utilisateur' }}</h3>
+                            <span class="post-time">{{ $post->P_created_at->diffForHumans() }}</span>
+                        </div>
+                        <span class="topic-badge">
+                            <i class="fas fa-bookmark"></i> {{ $post->topic->title }}
                         </span>
                     </div>
+                </div>
+
+                <div class="post-header-right">
+                    @auth
+                        <div class="post-menu">
+                            <button class="menu-trigger" onclick="toggleMenu('show-{{ $post->id }}')" aria-label="Open post menu">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu" id="menu-show-{{ $post->id }}">
+                                @if($post->created_by == auth()->id())
+                                    <a href="{{ route('user.posts.edit', $post) }}" class="menu-item">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <form action="{{ route('user.posts.destroy', $post) }}" method="POST" class="menu-item-form">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="menu-item delete-btn" >
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                @endif
+                                @if($post->created_by != auth()->id())
+                                    <button type="button" class="menu-item report-btn" onclick="reportPost('{{ $post->id }}')">
+                                        <i class="fas fa-flag"></i> Report
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    @endauth
                 </div>
             </div>
 
@@ -58,21 +96,22 @@
                     <i class="fas fa-comment"></i>
                     <span>{{ $post->comments->count() }} comments</span>
                 </div>
-                <div class="stat-item">
-                    <i class="fas fa-eye"></i>
-                    <span>0 views</span>
-                </div>
             </div>
         </div>
 
-        <!-- Section Commentaires -->
+        {{-- ===== COMMENTS ===== --}}
         <div class="comments-section">
             <h3>Comments ({{ $post->comments->count() }})</h3>
-            
+
             @if($post->comments->count() > 0)
                 <div class="comments-list">
                     @foreach($post->comments as $comment)
-                        <div class="comment-item">
+                        @php
+                            $cLikes   = $comment->likes_count ?? ($comment->likes->count() ?? 0);
+                            $likedByMe= auth()->check() ? $comment->isLikedBy(auth()->id()) : false;
+                        @endphp
+
+                        <div class="comment-item" id="comment-{{ $comment->id }}">
                             <div class="comment-header">
                                 <div class="user-info">
                                     <div class="user-avatar-sm">
@@ -83,25 +122,152 @@
                                         <span class="comment-time">{{ $comment->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
-                                <div class="comment-actions">
-                                    @if($comment->created_by == auth()->user()->id) 
-                                        <a href="{{ route('user.comments.edit', $comment) }}" class="btn btn-xs btn-warning">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('user.comments.destroy', $comment) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-xs btn-danger" 
-                                                    onclick="return confirm('Supprimer ce commentaire?')">
-                                                <i class="fas fa-trash"></i>
+
+                                @if($comment->created_by == auth()->id())
+                                    <div class="post-header-right">
+                                        <div class="post-menu">
+                                            <button class="menu-trigger" onclick="toggleMenu('comment-{{ $comment->id }}')" aria-label="Open comment menu">
+                                                <i class="fas fa-ellipsis-v"></i>
                                             </button>
-                                        </form>
-                                    @endif
-                                </div>
+                                            <div class="dropdown-menu" id="menu-comment-{{ $comment->id }}">
+                                                <a href="{{ route('user.comments.edit', $comment) }}" class="menu-item">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <form action="{{ route('user.comments.destroy', $comment) }}" method="POST" class="menu-item-form">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="menu-item delete-btn" onclick="return confirm('Delete this comment?')">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
+
                             <div class="comment-content">
                                 <p>{{ $comment->content_C }}</p>
                             </div>
+
+                            {{-- Actions: Like + Reply toggle --}}
+                            <div class="comment-actions">
+                                @auth
+                                    <form action="{{ route('user.comment_likes.toggle', $comment) }}"
+                                          method="POST"
+                                          class="comment-like-form"
+                                          data-comment-id="{{ $comment->id }}">
+                                        @csrf
+                                        <button type="submit" class="comment-like-btn {{ $likedByMe ? 'liked' : '' }}">
+                                            <i class="fas fa-heart comment-like-icon"></i>
+                                            <span class="comment-like-text">{{ $likedByMe ? 'Unlike' : 'Like' }}</span>
+                                            <span class="comment-like-count">({{ $cLikes }})</span>
+                                        </button>
+                                        <button type="button"
+                                                class="comment-reply-btn comment-reply-toggle"
+                                                data-target="#reply-form-{{ $comment->id }}"
+                                                data-mention="{{ '@'.($comment->user->name ?? 'user') }}">
+                                            <i class="fas fa-reply comment-reply-icon"></i>
+                                            <span>Reply</span>
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}" class="comment-like-btn">
+                                        <i class="fas fa-heart comment-like-icon"></i>
+                                        <span class="comment-like-text">Like</span>
+                                        <span class="comment-like-count">({{ $cLikes }})</span>
+                                    </a>
+                                @endauth
+                            </div>
+
+                            {{-- REPLIES LIST --}}
+                            @if($comment->replies && $comment->replies->count())
+                                <div class="replies">
+                                    @foreach($comment->replies as $reply)
+                                        @php
+                                            $rLikes   = $reply->likes_count ?? ($reply->likes->count() ?? 0);
+                                            $rLikedBy = auth()->check() ? $reply->isLikedBy(auth()->id()) : false;
+                                        @endphp
+                                        <div class="reply-item" id="comment-{{ $reply->id }}">
+                                            <div class="reply-header">
+                                                <div class="user-info">
+                                                    <div class="user-avatar-xs"><i class="fas fa-user"></i></div>
+                                                    <div class="user-details">
+                                                        <h5>{{ $reply->user->name ?? 'Utilisateur' }}</h5>
+                                                        <span class="comment-time">{{ $reply->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                </div>
+
+                                                @if($reply->created_by == auth()->id())
+                                                    <div class="post-header-right">
+                                                        <div class="post-menu">
+                                                            <button class="menu-trigger" onclick="toggleMenu('comment-{{ $reply->id }}')" aria-label="Open reply menu">
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu" id="menu-comment-{{ $reply->id }}">
+                                                                <a href="{{ route('user.comments.edit', $reply) }}" class="menu-item">
+                                                                    <i class="fas fa-edit"></i> Edit
+                                                                </a>
+                                                                <form action="{{ route('user.comments.destroy', $reply) }}" method="POST" class="menu-item-form">
+                                                                    @csrf @method('DELETE')
+                                                                    <button type="submit" class="menu-item delete-btn" onclick="return confirm('Delete this reply?')">
+                                                                        <i class="fas fa-trash"></i> Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <div class="comment-content">
+                                                <p>{{ $reply->content_C }}</p>
+                                            </div>
+
+                                            <div class="comment-actions">
+                                                @auth
+                                                    <form action="{{ route('user.comment_likes.toggle', $reply) }}"
+                                                          method="POST"
+                                                          class="comment-like-form"
+                                                          data-comment-id="{{ $reply->id }}">
+                                                        @csrf
+                                                        <button type="submit" class="comment-like-btn {{ $rLikedBy ? 'liked' : '' }}">
+                                                            <i class="fas fa-heart comment-like-icon"></i>
+                                                            <span class="comment-like-text">{{ $rLikedBy ? 'Unlike' : 'Like' }}</span>
+                                                            <span class="comment-like-count">({{ $rLikes }})</span>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <a href="{{ route('login') }}" class="comment-like-btn">
+                                                        <i class="fas fa-heart comment-like-icon"></i>
+                                                        <span class="comment-like-text">Like</span>
+                                                        <span class="comment-like-count">({{ $rLikes }})</span>
+                                                    </a>
+                                                @endauth
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            {{-- REPLY FORM (hidden by default) --}}
+                            @auth
+                                <form id="reply-form-{{ $comment->id }}"
+                                      class="reply-form"
+                                      action="{{ route('user.comments.reply.store', $comment) }}"
+                                      method="POST">
+                                    @csrf
+                                    <textarea name="content_C"
+                                              rows="2"
+                                              class="form-control"
+                                              placeholder="Write your reply..."></textarea>
+                                    <div class="form-actions reply-actions">
+                                        <button type="button" class="btn btn-light btn-xs reply-cancel" data-target="#reply-form-{{ $comment->id }}">Cancel</button>
+                                        <button type="submit" class="btn btn-primary btn-xs">
+                                            <i class="fas fa-paper-plane"></i> Reply
+                                        </button>
+                                    </div>
+                                </form>
+                            @endauth
                         </div>
                     @endforeach
                 </div>
@@ -113,685 +279,489 @@
                 </div>
             @endif
 
-            <!-- Comment Form -->
-            <div class="comment-form">
+            {{-- Add top-level comment --}}
+            <div class="comment-form" id="comment-form">
                 <h4>Add a Comment</h4>
+
                 <form action="{{ route('user.comments.store', $post) }}" method="POST">
                     @csrf
-                    <textarea name="content_C" rows="3" placeholder="Write your comment..." 
-                            class="form-control" required></textarea>
+
+                    <textarea
+                        name="content_C"
+                        id="content_C"
+                        rows="3"
+                        class="form-control"
+                        placeholder="Write your comment..."
+                        required>{{ old('content_C') }}</textarea>
+
+                    <small id="moderation-status-comment" class="text-muted"></small>
+                    <div id="moderation-preview-comment" class="moderation-preview" aria-live="polite"></div>
+                    <div class="moderation-actions" style="margin-top:.5rem">
+                        <button type="button" id="applyCleanComment" class="btn btn-light btn-xs" disabled>
+                            Apply cleaned text
+                        </button>
+                    </div>
+
                     @error('content_C')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
+
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i>
-                            Comment
+                            <i class="fas fa-paper-plane"></i> Comment
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
 
-    <!-- Actions du post -->
-    <div class="post-actions-section">
-        <div class="action-buttons">
-            <form action="{{ route('user.likes.toggle', $post) }}" method="POST" class="like-form d-inline">
-                @csrf
-                <button type="submit" class="btn btn-outline like-btn" 
-                        data-post-id="{{ $post->id }}"
-                        data-liked="{{ $post->likes->contains('liked_by', auth()->user()->id) ? 'true' : 'false' }}">
-                    <i class="fas fa-heart like-icon"></i>
-                    <span class="like-text">
-                        {{ $post->likes->contains('liked_by', auth()->user()->id) ? 'Unlike' : 'Like' }}
-                    </span>
-                    <span class="likes-count">({{ $post->likes->count() }})</span>
-                </button>
-            </form>
-            
-            <button class="btn btn-outline" onclick="document.getElementById('comment-form').scrollIntoView()">
-                <i class="fas fa-comment"></i>
-                Comment
-            </button>
-            
-            <button class="btn btn-outline">
-                <i class="fas fa-share"></i>
-                Share
-            </button>
-        </div>
-
-        <!-- Zone de danger pour le propriétaire du post -->
-        @if($post->created_by == 1)
+        {{-- Danger zone --}}
+        @if($post->created_by == auth()->id())
             <div class="danger-zone">
                 <h4>Danger Zone</h4>
                 <p>Deleting this post is irreversible.</p>
-                <form action="{{ route('user.posts.destroy', $post) }}" method="POST" 
-                    onsubmit="return confirm('Are you sure you want to delete this post?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash"></i>
-                        Delete this post
+                <form id="dangerDeleteForm" action="{{ route('user.posts.destroy', $post) }}" method="POST">
+                    @csrf @method('DELETE')
+                    <button type="button" class="btn btn-danger" id="dangerDeleteBtn">
+                        <i class="fas fa-trash"></i> Delete this post
                     </button>
                 </form>
             </div>
         @endif
     </div>
 </div>
-
 @endsection
+
+<!-- ===== MODAL DE CONFIRMATION DE SUPPRESSION ===== -->
+<div id="deleteConfirmModal" class="delete-modal">
+    <div class="delete-modal-content">
+        <div class="delete-modal-header">
+            <h3><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h3>
+            <button class="close-delete" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="delete-modal-body">
+            <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+        </div>
+        <div class="delete-modal-footer">
+            <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+    </div>
+</div>
 
 @section('scripts')
 <script>
- // ========== SYSTÈME DE LIKES ==========
-    const likeForms = document.querySelectorAll('.like-form');
-    
-    likeForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
+/* ===== post/comment menu toggle ===== */
+function toggleMenu(suffix) {
+    const id = `menu-${suffix}`;
+    const menu = document.getElementById(id);
+    document.querySelectorAll('.dropdown-menu').forEach(m => { if (m !== menu) m.classList.remove('active'); });
+    menu?.classList.toggle('active');
+}
+document.addEventListener('click', e => {
+    if (!e.target.closest('.post-menu')) {
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('active'));
+    }
+});
+
+/* ===== COMMENT LIKE AJAX ===== */
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.comment-like-form').forEach(form => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const button = form.querySelector('.like-btn');
-            const likeIcon = form.querySelector('.like-icon');
-            const likeText = form.querySelector('.like-text');
-            const likesCount = form.querySelector('.likes-count');
-            const currentLiked = button.dataset.liked === 'true';
-            
-            // Désactiver le bouton pendant la requête
-            button.disabled = true;
-            
-            // Envoyer la requête AJAX
-            fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({})
-            })
-            .then(response => response.json())
-            .then(data => {
+            const btn   = form.querySelector('.comment-like-btn');
+            const icon  = form.querySelector('.comment-like-icon');
+            const text  = form.querySelector('.comment-like-text');
+            const count = form.querySelector('.comment-like-count');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({})
+                });
+                if (!res.ok) throw new Error('Network error');
+
+                const data = await res.json();
                 if (data.success) {
-                    // Mettre à jour le data-attribute
-                    button.dataset.liked = data.liked.toString();
-                    
-                    // Mettre à jour l'icône
-                    if (data.liked) {
-                        likeIcon.style.color = '#ef4444';
-                        likeIcon.classList.remove('far');
-                        likeIcon.classList.add('fas');
-                    } else {
-                        likeIcon.style.color = '#6b7280';
-                        likeIcon.classList.remove('fas');
-                        likeIcon.classList.add('far');
-                    }
-                    
-                    // Mettre à jour le texte
-                    likeText.textContent = data.liked ? 'Unlike' : 'Like';
-                    
-                    // Mettre à jour le compteur
-                    likesCount.textContent = `(${data.likes_count})`;
-                    
-                    // Mettre à jour aussi le compteur dans les stats
-                    const statsLikes = document.querySelector('.post-stats .stat-item:nth-child(1) span');
-                    if (statsLikes) {
-                        statsLikes.textContent = `${data.likes_count} likes`;
-                    }
-                    
-                    // Afficher un message toast
-                    showToast(data.message);
+                    if (data.liked) { btn.classList.add('liked'); text.textContent = 'Unlike'; }
+                    else { btn.classList.remove('liked'); text.textContent = 'Like'; }
+                    count.textContent = `(${data.likes_count})`;
+                    icon.style.transform = 'scale(1.2)';
+                    setTimeout(() => icon.style.transform = 'scale(1)', 180);
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Une erreur est survenue', 'error');
-            })
-            .finally(() => {
-                // Réactiver le bouton
-                button.disabled = false;
-            });
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred while liking this comment.');
+            } finally {
+                btn.disabled = false;
+            }
         });
     });
+
+    // set initial heart color on liked buttons
+    document.querySelectorAll('.comment-like-btn.liked .comment-like-icon')
+        .forEach(i => i.style.color = '#ef4444');
+});
+
+/* ===== REPLY TOGGLE + PREFILL @mention ===== */
+document.addEventListener('click', (e)=>{
+  const toggle = e.target.closest('.comment-reply-toggle');
+  if (toggle) {
+    const targetSel = toggle.getAttribute('data-target');
+    const form = document.querySelector(targetSel);
+    if (!form) return;
+    form.classList.toggle('active');
     
-    function showToast(message, type = 'success') {
-        const toast = document.createElement('div');
-        const bgColor = type === 'success' ? '#10b981' : '#ef4444';
-        
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${bgColor};
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-            font-family: inherit;
-            font-size: 14px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        `;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
-        }, 2000);
+    toggle.classList.toggle('active', form.classList.contains('active'));
+    // Prefill with @mention if opening
+    const mention = toggle.getAttribute('data-mention') || '';
+    const tx = form.querySelector('textarea');
+    if (form.classList.contains('active') && tx && !tx.value.trim() && mention) {
+        tx.value = mention + ' ';
+        tx.focus();
+        // place cursor at end
+        const v = tx.value; tx.value=''; tx.value=v;
     }
-    
-    // Ajouter les animations CSS
-    if (!document.querySelector('#like-styles')) {
-        const style = document.createElement('style');
-        style.id = 'like-styles';
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-            
-            .like-btn {
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                border: 1px solid #d1d5db;
-                background: transparent;
-                color: #4b5563;
-                padding: 0.5rem 1rem;
-                border-radius: 0.375rem;
-                cursor: pointer;
-                text-decoration: none;
-            }
-            
-            .like-btn:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
-            
-            .like-btn:hover:not(:disabled) {
-                background: #f3f4f6;
-                border-color: #9ca3af;
-            }
-            
-            .like-btn:hover:not(:disabled) .like-icon {
-                transform: scale(1.1);
-            }
-            
-            .like-icon {
-                transition: all 0.3s ease;
-            }
-            
-            .action-buttons {
-                display: flex;
-                gap: 1rem;
-                margin-bottom: 1.5rem;
-                flex-wrap: wrap;
-            }
-            
-            .btn-outline {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                border: 1px solid #d1d5db;
-                background: transparent;
-                color: #4b5563;
-                padding: 0.5rem 1rem;
-                border-radius: 0.375rem;
-                cursor: pointer;
-                text-decoration: none;
-                transition: all 0.3s ease;
-                font-family: inherit;
-                font-size: 14px;
-            }
-            
-            .btn-outline:hover {
-                background: #f3f4f6;
-                border-color: #9ca3af;
-            }
-        `;
-        document.head.appendChild(style);
+  }
+
+  // Cancel button inside reply form
+  const cancel = e.target.closest('.reply-cancel');
+  if (cancel) {
+    const targetSel = cancel.getAttribute('data-target');
+    const form = document.querySelector(targetSel);
+    form?.classList.remove('active');
+
+    // >>> et on retire aussi l’état actif du bouton Reply correspondant
+    if (form) {
+      const btn = document.querySelector(`[data-target="#${form.id}"].comment-reply-toggle`);
+      btn?.classList.remove('active');
     }
-    
+  }
+});
+
+/* ===== OPTIONAL: live moderation for top-level comment only ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  const tx = document.getElementById('content_C');
+  if (!tx) return;
+
+  const MOD_URL  = "{{ route('moderate.live') }}";
+  const statusEl = document.getElementById('moderation-status-comment');
+  const preview  = document.getElementById('moderation-preview-comment');
+  const applyBtn = document.getElementById('applyCleanComment');
+  const csrftok  = document.querySelector('meta[name="csrf-token"]').content;
+
+  let composing=false; tx.addEventListener('compositionstart',()=>composing=true);
+  tx.addEventListener('compositionend',()=>{composing=false; trigger();});
+
+  let t=null, controller=null;
+  const debounce=(fn,ms=300)=>(...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms);};
+
+  const trigger = debounce(async ()=>{
+    if (composing) return;
+    const raw = tx.value;
+    if(!raw.trim()){ statusEl.textContent=''; preview.textContent=''; applyBtn.disabled=true; return; }
+
+    if (controller) controller.abort(); controller = new AbortController();
+    try{
+      const res = await fetch(MOD_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json','X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN':csrftok},
+        body:JSON.stringify({text:raw}),
+        signal:controller.signal
+      });
+      if(!res.ok) return;
+      const data = await res.json();
+      preview.textContent = data.clean || '';
+      statusEl.textContent = data.toxic ? '⚠️ Some words will be masked upon publication.' : '✓ No issues detected';
+      applyBtn.disabled = !(data.clean && data.clean.trim() && data.clean !== raw);
+    }catch(e){}
+  },400);
+
+  tx.addEventListener('input', trigger);
+  applyBtn?.addEventListener('click',()=>{
+    const clean=(preview.textContent||'').trim(); if(!clean) return;
+    tx.value=clean; tx.dispatchEvent(new Event('input')); tx.focus();
+  });
+});
+// ===== MODAL DE CONFIRMATION SUPPRESSION =====
+let deleteForm = null;
+
+document.querySelectorAll('.menu-item-form').forEach(form => {
+    const deleteBtn = form.querySelector('.delete-btn');
+    deleteBtn.addEventListener('click', e => {
+        e.preventDefault();
+        deleteForm = form;
+        openDeleteModal();
+    });
+});
+
+function openDeleteModal() {
+    const modal = document.getElementById('deleteConfirmModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteConfirmModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    deleteForm = null;
+}
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+    if (deleteForm) deleteForm.submit();
+});
+
+// ===== DANGER ZONE DELETE BUTTON =====
+const dangerDeleteBtn = document.getElementById('dangerDeleteBtn');
+const dangerDeleteForm = document.getElementById('dangerDeleteForm');
+
+if (dangerDeleteBtn) {
+    dangerDeleteBtn.addEventListener('click', e => {
+        e.preventDefault();
+        deleteForm = dangerDeleteForm; // reuse the global deleteForm variable
+        openDeleteModal();
+    });
+}
+
 </script>
 @endsection
 
 @section('styles')
 <style>
-    /* === STYLES GLOBAUX USER === */
-    .forum-container {
-        max-width: 800px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-    }
+/* ===== container/header ===== */
+.forum-container{max-width:800px;margin:2rem auto;padding:0 1rem}
+.forum-header{text-align:center;margin-bottom:2rem}
+.forum-header h1{color:#2d3748;margin-bottom:.5rem}
+.forum-header p{color:#718096;margin-bottom:1rem}
 
-    .forum-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
+/* alert */
+.alert{padding:1rem;border-radius:.375rem;margin:1rem 0;display:flex;gap:.5rem;align-items:center}
+.alert-success{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
 
-    .forum-header h1 {
-        color: #2d3748;
-        margin-bottom: 0.5rem;
-    }
+/* ===== main card ===== */
+.post-detail-container{max-width:800px;margin:0 auto}
+.main-post{background:#fff;border-radius:.75rem;padding:1.5rem;margin-bottom:2rem;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e2e8f0}
+.post-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem}
 
-    .forum-header p {
-        color: #718096;
-        margin-bottom: 1.5rem;
-    }
+/* user */
+.user-info{display:flex;gap:.9rem;align-items:center}
+.user-avatar{width:40px;height:40px;background:black;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
+.user-avatar-sm{width:40px;height:40px;background:#6b7280;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
+.user-avatar-xs{width:32px;height:32px;background:#9ca3af;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem}
+.user-details{display:flex;flex-direction:column}
+.user-top{display:flex;align-items:center;gap:.35rem}
+.user-top h3{margin:0;color:#111827;font-size:1.05rem;font-weight:700}
+.post-time{color:#9ca3af;font-size:.875rem}
+.post-time::before{content:"•"; margin:0 .35rem 0 .15rem; color:#9ca3af; font-weight:700}
 
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 0.375rem;
-        text-decoration: none;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
+/* topic pill */
+.topic-badge{display:inline-flex;align-items:center;gap:.35rem;background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff;padding:.25rem .6rem;border-radius:9999px;font-size:.75rem;font-weight:600;width:auto;max-width:max-content;white-space:nowrap;margin-top:.25rem}
+.topic-badge i{font-size:.8rem}
 
-    .btn-warning {
-        background: #f59e0b;
-        color: white;
-    }
+/* menu */
+.post-header-right{display:flex;align-items:center;gap:.5rem}
+.post-menu{position:relative}
+.menu-trigger{display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;color:#64748b;padding:0;cursor:pointer;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.menu-trigger .fa-ellipsis-v{transform:rotate(90deg)}
+.menu-trigger:hover,.menu-trigger:focus{background:#f5f7ff;border-color:#c7d2fe;color:#374151;box-shadow:0 2px 6px rgba(0,0,0,.08);outline:none}
+.dropdown-menu{position:absolute;top:100%;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);min-width:160px;z-index:1000;opacity:0;visibility:hidden;transform:translateY(-10px);transition:.2s}
+.dropdown-menu.active{opacity:1;visibility:visible;transform:translateY(0)}
+.menu-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;text-decoration:none;color:#374151;font-size:.875rem;border:none;background:none;width:100%;text-align:left;cursor:pointer}
+.menu-item:hover{background:#f8fafc}
+.menu-item-form{width:100%}
+.delete-btn{color:#ef4444}
+.report-btn{color:#f59e0b}
+.report-btn:hover{background:#fffbeb}
 
-    .btn-warning:hover {
-        background: #d97706;
-    }
+/* content */
+.post-content{margin-bottom:1rem}
+.post-content p{color:#4a5568;line-height:1.7;margin:0}
 
-    .btn-secondary {
-        background: #6b7280;
-        color: white;
-    }
+/* stats */
+.post-stats{display:flex;gap:1.5rem;margin-top:.75rem;padding:.75rem 0;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9}
+.stat-item{display:flex;align-items:center;gap:.5rem;color:#64748b;font-size:.875rem;font-weight:500}
+.stat-item .fa-heart{color:#ef4444}
+.stat-item .fa-comment{color:#06b6d4}
 
-    .btn-secondary:hover {
-        background: #4b5563;
-    }
+/* ===== comments ===== */
+.comments-section{background:#fff;border-radius:.75rem;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e2e8f0;margin-bottom:2rem}
+.comments-section h3{color:#2d3748;margin-bottom:1rem;font-size:1.1rem}
+.comments-list{display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem}
+.comment-item{padding:1rem;border:1px solid #f1f5f9;border-radius:.5rem;background:#f8fafc}
+.comment-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.comment-content p{color:#4a5568;line-height:1.6;margin:0}
+.comment-time{color:#9ca3af;font-size:.85rem}
+.comment-time::before{content:"•"; margin:0 .35rem 0 .25rem; color:#9ca3af; font-weight:700}
 
-    .btn-primary {
-        background: #3b82f6;
-        color: white;
-    }
+/* comment actions */
+.comment-actions{display:flex;align-items:center;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
+.comment-like-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  border:1px solid #e5e7eb;background:#fff;color:#4b5563;
+  padding:.35rem .6rem;border-radius:.375rem;cursor:pointer;
+  transition:.2s;text-decoration:none;font-size:.85rem;font-weight:600;
+}
+.comment-like-btn:hover{background:#f3f4f6;border-color:#d1d5db}
+.comment-like-btn .comment-like-icon{transition:.2s}
+.comment-like-btn.liked{color:#b91c1c;border-color:#fecaca;background:#fff5f5}
+.comment-like-btn.liked .comment-like-icon{color:#ef4444}
 
-    .btn-primary:hover {
-        background: #2563eb;
-    }
+/* replies */
+.replies{margin-top:.6rem;border-left:3px solid #e5e7eb;padding-left:.75rem;display:flex;flex-direction:column;gap:.6rem}
+.reply-item{background:#fff;border:1px solid #eef2f7;border-radius:.5rem;padding:.65rem}
+.reply-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.35rem}
 
-    .btn-danger {
-        background: #ef4444;
-        color: white;
-    }
+/* reply form */
+.reply-form{display:none;margin-top:.6rem}
+.reply-form.active{display:block}
+.reply-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.35rem}
 
-    .btn-danger:hover {
-        background: #dc2626;
-    }
+.comment-form{border-top:1px solid #e2e8f0;padding-top:1rem}
+.form-control{width:100%;padding:.75rem;border:1px solid #d1d5db;border-radius:.375rem;font-size:1rem;resize:vertical}
+.form-control:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.form-actions{display:flex;justify-content:flex-end;margin-top:.75rem}
+.error-message{color:#ef4444;font-size:.875rem;margin-top:.25rem}
+.moderation-preview{white-space:pre-wrap;margin-top:.25rem;padding:.5rem .75rem;border:1px dashed #e5e7eb;border-radius:.375rem;color:#374151;background:#fafafa;font-size:.95rem}
 
-    .btn-xs {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-        min-height: auto;
-    }
+/* danger zone */
+.danger-zone{border-top:1px solid #fecaca;padding-top:1.25rem}
+.danger-zone h4{color:#dc2626;margin-bottom:.25rem}
+.danger-zone p{color:#7f1d1d;margin-bottom:.75rem;font-size:.875rem}
 
-    .alert {
-        padding: 1rem;
-        border-radius: 0.375rem;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
+/* Page actions */
+.page-actions{
+  display:inline-flex;gap:.5rem;background:#fff;border:1px solid #e5e7eb;
+  box-shadow:0 6px 16px rgba(15,23,42,.06);border-radius:14px;padding:.35rem;margin:.75rem auto 0;
+}
+.btn-action{--h:40px;height:var(--h);min-width:120px;padding:0 .9rem;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:10px;border:1px solid transparent;font-weight:600;text-decoration:none;transition:transform .15s, box-shadow .15s, background .15s, border-color .15s;line-height:1}
+.btn-edit{background:linear-gradient(180deg,#fde68a,#f59e0b1a);color:#92400e;border-color:#fcd34d}
+.btn-edit:hover{background:#fbbf24;color:#fff;border-color:#f59e0b;box-shadow:0 8px 18px rgba(245,158,11,.25);transform:translateY(-1px)}
+.btn-back{background:linear-gradient(180deg,#f3f4f6,#e5e7eb);color:#374151;border-color:#e5e7eb}
+.btn-back:hover{background:#374151;color:#fff;border-color:#374151;box-shadow:0 8px 18px rgba(55,65,81,.18);transform:translateY(-1px)}
+.btn-action i{font-size:1rem}
+.btn-action:focus{outline:3px solid transparent;box-shadow:0 0 0 4px rgba(37,99,235,.25)}
+.forum-header{text-align:center}
+.forum-header .page-actions{display:inline-flex}
 
-    .alert-success {
-        background: #d1fae5;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
-    }
-
-    /* === STYLES SPÉCIFIQUES POST DÉTAIL === */
-    .header-content {
-        text-align: center;
-    }
-
-    .header-actions {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-        margin-top: 1rem;
-    }
-
-    .post-detail-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .main-post {
-        background: white;
-        border-radius: 0.75rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
-    }
-
-    .post-header {
-        margin-bottom: 1.5rem;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
+/* responsive */
+@media (max-width:768px){
+  .forum-container{margin:1rem auto;padding:0 .5rem}
+  .main-post,.comments-section{padding:1.2rem}
+}
+@media (max-width:520px){
+  .btn-action{min-width:44px;padding:0 .65rem}
+  .btn-action .label{display:none}
+  .page-actions{padding:.3rem;gap:.35rem}
+}
+.comment-reply-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  border:1px solid #e5e7eb;background:#fff;color:#4b5563;
+  padding:.35rem .6rem;border-radius:.375rem;cursor:pointer;
+  transition:.2s;text-decoration:none;font-size:.85rem;font-weight:600;
+}
+.comment-reply-btn:hover{background:#f3f4f6;border-color:#d1d5db}
+.comment-reply-btn .comment-reply-icon{transition:.2s}
 
 
-    .user-avatar-sm {
-        width: 35px;
-        height: 35px;
-        background: #6b7280;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 0.875rem;
-    }
+.comment-reply-btn.active{
+  color:#1d4ed8;                 
+  border-color:#bfdbfe;
+  background:#eff6ff;
+}
+.comment-reply-btn.active .comment-reply-icon{color:#2563eb}
+/* ===== Modal suppression ===== */
+.delete-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
 
-    .user-details h3 {
-        margin: 0;
-        color: #2d3748;
-        font-size: 1.25rem;
-    }
+.delete-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    animation: fadeIn .25s ease;
+    overflow: hidden;
+}
 
-    .user-details h4 {
-        margin: 0;
-        color: #2d3748;
-        font-size: 1rem;
-    }
+.delete-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #eee;
+}
 
-    .post-time, .comment-time {
-        color: #718096;
-        font-size: 0.875rem;
-    }
+.delete-modal-header h3 {
+    margin: 0;
+    color: #b91c1c;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
 
-    .topic-badge {
-        background: #e2e8f0;
-        color: #4a5568;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-    }
+.close-delete {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+}
 
-    .post-content {
-        margin-bottom: 1.5rem;
-    }
+.close-delete:hover {
+    color: #111827;
+}
 
-    .post-content p {
-        color: #4a5568;
-        line-height: 1.7;
-        font-size: 1.1rem;
-        margin: 0;
-    }
+.delete-modal-body {
+    padding: 1.25rem;
+    color: #374151;
+    font-size: .95rem;
+}
 
-    .post-stats {
-        display: flex;
-        gap: 2rem;
-        border-top: 1px solid #e2e8f0;
-        padding-top: 1rem;
-    }
+.delete-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #eee;
+}
 
-    .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #718096;
-        font-size: 0.875rem;
-    }
+.btn-danger {
+    background: #dc2626;
+    color: #fff;
+}
 
-    .comments-section {
-        background: white;
-        border-radius: 0.75rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
-    }
+.btn-danger:hover {
+    background: #b91c1c;
+}
 
-    .comments-section h3 {
-        color: #2d3748;
-        margin-bottom: 1.5rem;
-        font-size: 1.25rem;
-    }
+.btn-secondary {
+    background: #e5e7eb;
+    color: #111827;
+}
 
-    .comments-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
+.btn-secondary:hover {
+    background: #d1d5db;
+}
 
-    .comment-item {
-        padding: 1.5rem;
-        border: 1px solid #f1f5f9;
-        border-radius: 0.5rem;
-        background: #f8fafc;
-    }
+@keyframes fadeIn {
+    from {opacity: 0; transform: scale(.95);}
+    to {opacity: 1; transform: scale(1);}
+}
 
-    .comment-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 0.75rem;
-    }
-
-    .comment-content p {
-        color: #4a5568;
-        line-height: 1.6;
-        margin: 0;
-    }
-
-    .comment-actions {
-        display: flex;
-        gap: 0.25rem;
-    }
-
-    .empty-comments {
-        text-align: center;
-        padding: 3rem 2rem;
-        color: #718096;
-    }
-
-    .empty-comments i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        opacity: 0.5;
-    }
-
-    .comment-form {
-        border-top: 1px solid #e2e8f0;
-        padding-top: 1.5rem;
-    }
-
-    .comment-form h4 {
-        color: #2d3748;
-        margin-bottom: 1rem;
-    }
-
-    .post-actions-section {
-        background: white;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-    }
-
-    .btn-outline {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: 1px solid #d1d5db;
-        background: transparent;
-        color: #4b5563;
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        font-family: inherit;
-        font-size: 14px;
-    }
-
-    .btn-outline:hover {
-        background: #f3f4f6;
-        border-color: #9ca3af;
-    }
-
-    .like-btn {
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: 1px solid #d1d5db;
-        background: transparent;
-        color: #4b5563;
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-    .like-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    .like-btn:hover:not(:disabled) {
-        background: #f3f4f6;
-        border-color: #9ca3af;
-    }
-
-    .like-btn:hover:not(:disabled) .like-icon {
-        transform: scale(1.1);
-    }
-
-    .like-icon {
-        transition: all 0.3s ease;
-    }
-
-    .danger-zone {
-        border-top: 1px solid #fecaca;
-        padding-top: 1.5rem;
-    }
-
-    .danger-zone h4 {
-        color: #dc2626;
-        margin-bottom: 0.5rem;
-    }
-
-    .danger-zone p {
-        color: #7f1d1d;
-        margin-bottom: 1rem;
-        font-size: 0.875rem;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #374151;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        font-size: 1rem;
-        resize: vertical;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    .error-message {
-        color: #ef4444;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-
-    .form-actions {
-        display: flex;
-        gap: 1rem;
-        justify-content: flex-end;
-        margin-top: 1rem;
-    }
-
-    @media (max-width: 768px) {
-        .forum-container {
-            margin: 1rem auto;
-            padding: 0 0.5rem;
-        }
-        
-        .header-actions {
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .main-post,
-        .comments-section,
-        .post-actions-section {
-            padding: 1.5rem;
-        }
-        
-        .post-stats {
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .action-buttons {
-            justify-content: center;
-        }
-        
-        .btn {
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .comment-header {
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .comment-actions {
-            align-self: flex-end;
-        }
-    }
 </style>
-
 @endsection

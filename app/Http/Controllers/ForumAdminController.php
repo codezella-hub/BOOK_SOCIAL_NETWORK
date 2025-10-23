@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Report;
 
 class ForumAdminController extends Controller
 {
@@ -70,4 +71,52 @@ class ForumAdminController extends Controller
         return redirect()->route('admin.topics.index')
             ->with('success', 'Topic supprimé avec succès.');
     }
+    // Liste des reports
+    public function indexR()
+    {
+        $reports = Report::with(['user', 'post.user', 'post.topic'])
+            ->latest()
+            ->get();
+            
+        return view('admin.GestionForum.reports.index', compact('reports'));
+    }
+
+    // Affichage d'un report spécifique
+    public function showR(Report $report)
+    {
+        $report->load(['user', 'post.user', 'post.topic']);
+        return view('admin.GestionForum.reports.show', compact('report'));
+    }
+
+    // Suppression d'un report
+    public function destroyR(Report $report)
+    {
+        $report->delete();
+
+        return redirect()->route('admin.reports.index')
+            ->with('success', 'Report supprimé avec succès.');
+    }
+
+    public function deletePost(Report $report)
+    {
+        if ($report->post) {
+            $report->post->delete();
+        }
+
+        $report->delete();
+
+        return redirect()->route('admin.reports.index')
+            ->with('success', 'The post has been deleted and the report is resolved.');
+    }
+
+    public function ignore(Report $report)
+    {
+
+        $report->delete();
+
+        return redirect()->route('admin.reports.index')
+            ->with('success', 'The report has been dismissed, and the post was not affected.');
+    }
 }
+
+

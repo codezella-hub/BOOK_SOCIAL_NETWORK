@@ -13,12 +13,16 @@ class Post extends Model
         'content_P',
         'created_by',
         'topic_id',
+        'image_path',
     ];
 
         protected $casts = [
         'P_created_at' => 'datetime',
     ];
-
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image_path ? asset('storage/'.$this->image_path) : null;
+    }
     // Relations
     public function user()
     {
