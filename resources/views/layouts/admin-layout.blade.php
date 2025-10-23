@@ -36,33 +36,33 @@
             justify-content: center;
             font-weight: bold;
         }
-        
+
         .notification-icon {
             position: relative;
             cursor: pointer;
         }
-        
+
         .notification-item {
             transition: background-color 0.3s ease;
         }
-        
+
         /* Pulse animation pour le badge */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
-        
+
         .notification-badge.new {
             animation: pulse 0.6s ease-in-out;
             background: #ff3838;
         }
-        
+
         /* Loading state */
         .notification-icon.loading i {
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -234,12 +234,18 @@
                 <a href="{{ route('admin.books.index') }}">
                     <i class="fas fa-book"></i>
                     <span>Books</span>
+
            <li class="{{ request()->routeIs('admin.forum.*') ? 'active' : '' }}">
-    <a href="{{ route('admin.forum.index') }}">
-        <i class="fas fa-comments"></i>
-        <span>Forum Management</span>
-    </a>
+
+
 </li>
+<li class="{{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.topics.index') }}">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum Management</span>
+                </a>
+            </li>
+
 
             </li>
             <li class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
@@ -301,14 +307,14 @@
                     <div class="notification-dropdown" id="notificationDropdown">
                         <div class="notification-header">
                             <h3>Notifications</h3>
-                            <button class="mark-all-read-btn" id="markAllReadBtn" 
+                            <button class="mark-all-read-btn" id="markAllReadBtn"
                                     {{ $unreadNotificationsCount == 0 ? 'disabled' : '' }}>
                                 Mark all as read
                             </button>
                         </div>
                         <div class="notification-list" id="notificationList">
                             @forelse($notifications as $notification)
-                                <a href="{{ route('admin.notifications.read', ['notification' => $notification->id]) }}" 
+                                <a href="{{ route('admin.notifications.read', ['notification' => $notification->id]) }}"
                                    class="notification-item {{ is_null($notification->read_at) ? 'unread' : '' }}"
                                    onclick="markAsRead('{{ $notification->id }}', event)">
                                     <i class="fas fa-flag notification-icon-sm"></i>
@@ -376,17 +382,17 @@ class RealTimeNotifications {
         this.pollingInterval = null;
         this.isPolling = false;
         this.isDropdownOpen = false;
-        
+
         this.init();
     }
 
     init() {
         // Initialiser le badge
         this.initializeBadge();
-        
+
         // Démarrer le polling
         this.startPolling();
-        
+
         // Mettre à jour toutes les 5 secondes
         this.pollingInterval = setInterval(() => {
             this.updateNotifications();
@@ -495,17 +501,17 @@ class RealTimeNotifications {
     updateUI(data) {
         // Mettre à jour le badge
         this.updateBadge(data.unread_count);
-        
+
         // Mettre à jour la liste des notifications
         this.updateNotificationList(data.notifications);
-        
+
         // Mettre à jour l'état du bouton "Mark all as read"
         this.updateMarkAllReadButton(data.unread_count);
     }
 
     updateBadge(unreadCount) {
         const currentCount = this.notificationBadge ? parseInt(this.notificationBadge.textContent) : 0;
-        
+
         if (unreadCount > 0) {
             if (this.notificationBadge) {
                 // Animation si le nombre a changé
@@ -523,7 +529,7 @@ class RealTimeNotifications {
                 this.notificationBadge.className = 'notification-badge new';
                 this.notificationBadge.textContent = unreadCount;
                 this.notificationIcon.appendChild(this.notificationBadge);
-                
+
                 setTimeout(() => {
                     this.notificationBadge.classList.remove('new');
                 }, 600);
@@ -548,7 +554,7 @@ class RealTimeNotifications {
         }
 
         this.notificationList.innerHTML = notifications.map(notification => `
-            <a href="${notification.url}" 
+            <a href="${notification.url}"
                class="notification-item ${notification.is_unread ? 'unread' : ''}"
                onclick="markAsRead('${notification.id}', event)">
                 <i class="fas fa-flag notification-icon-sm"></i>
@@ -594,12 +600,12 @@ class RealTimeNotifications {
             if (!response.ok) throw new Error('Network response was not ok');
 
             const result = await response.json();
-            
+
             if (result.success) {
                 // Mettre à jour l'interface immédiatement
                 this.updateBadge(0);
                 this.updateMarkAllReadButton(0);
-                
+
                 // Retirer la classe "unread" de toutes les notifications
                 const unreadItems = this.notificationList.querySelectorAll('.notification-item.unread');
                 unreadItems.forEach(item => {
@@ -643,9 +649,9 @@ class RealTimeNotifications {
             font-size: 14px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         `;
-        
+
         document.body.appendChild(messageDiv);
-        
+
         setTimeout(() => {
             messageDiv.remove();
         }, 3000);
@@ -671,13 +677,13 @@ class RealTimeNotifications {
 // Fonction pour marquer une notification comme lue
 function markAsRead(notificationId, event) {
     if (event.metaKey || event.ctrlKey) return true;
-    
+
     event.preventDefault();
-    
+
     // Marquer comme lue visuellement immédiatement
     const notificationItem = event.currentTarget;
     notificationItem.classList.remove('unread');
-    
+
     // Mettre à jour le compteur
     const badge = document.querySelector('.notification-badge');
     if (badge) {
@@ -688,7 +694,7 @@ function markAsRead(notificationId, event) {
             badge.style.display = 'none';
         }
     }
-    
+
     // Rediriger après un court délai
     setTimeout(() => {
         window.location.href = `/admin/notifications/${notificationId}/read`;
