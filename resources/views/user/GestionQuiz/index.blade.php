@@ -221,7 +221,7 @@
                 <div class="quiz-card">
                     <div class="quiz-header">
                         <h2 class="quiz-title">{{ $quiz->title }}</h2>
-                        <p class="quiz-book">📖 {{ $quiz->book_name }}</p>
+                        <p class="quiz-book">📖 {{ $quiz->book->title ?? 'Livre #' . $quiz->id_book }}</p>
 
                         @php
                             $difficultyClass = match($quiz->difficulty_level) {
@@ -282,7 +282,8 @@
 
                         <div class="quiz-actions">
                             @if(($quiz->questions_count ?? $quiz->questions->count()) > 0)
-                                <a href="{{ route('user.quiz.show', $quiz->id_quiz) }}" class="btn btn-primary">
+                                {{-- MODIFICATION ICI: Passer l'ID du book et l'ID du quiz --}}
+                                <a href="{{ route('user.quiz.show', [$quiz->id_book, $quiz->id_quiz]) }}" class="btn btn-primary">
                                     <i class="fas fa-play"></i> Commencer
                                 </a>
                             @else

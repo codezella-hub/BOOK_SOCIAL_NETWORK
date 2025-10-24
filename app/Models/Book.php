@@ -18,7 +18,7 @@ class Book extends Model
         'archived',
         'shareable',
         'category_id',
-        'user_id' // Ajouté
+        'user_id'
     ];
 
     protected $casts = [
@@ -34,5 +34,11 @@ class Book extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Relation One-to-Many: Un livre peut avoir plusieurs quiz
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class, 'id_book', 'id');
     }
 }

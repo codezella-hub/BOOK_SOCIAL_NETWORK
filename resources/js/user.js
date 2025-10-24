@@ -53,6 +53,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Existing init for books
+initCarousel('#books-track', '.carousel-dot');
+
+// Add this line for events carousel:
+initCarousel('#events-track', '#events-dots .carousel-dot');
+
+
     // Ajustement du menu en cas de redimensionnement
     window.addEventListener('resize', function() {
         const navLinks = document.querySelector('.nav-links');

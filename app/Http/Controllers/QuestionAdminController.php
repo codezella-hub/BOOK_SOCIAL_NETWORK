@@ -9,35 +9,35 @@ use Illuminate\Http\Request;
 class QuestionAdminController extends Controller
 {
     /**
-     * Afficher toutes les questions d'un quiz
+     * 🧩 Afficher toutes les questions d’un quiz
      */
     public function index(Quiz $quiz)
     {
-        // Charger les questions triées par position
-        $questions = $quiz->questions()
-                         ->orderBy('order_position')
-                         ->get();
+        // On récupère les questions liées à ce quiz
+        $questions = Question::where('id_quiz', $quiz->id_quiz)
+                             ->orderBy('order_position')
+                             ->get();
 
+        // Envoi vers la vue avec les données
         return view('admin.GestionQuestion.index', compact('quiz', 'questions'));
     }
 
     /**
-     * Formulaire de création d'une question
+     * 🧠 Formulaire de création de question
      */
     public function create(Quiz $quiz)
     {
-        // Déterminer la prochaine position
-        $nextPosition = $quiz->questions()->max('order_position') + 1;
+        // Position suivante (utile pour afficher dans le formulaire)
+        $nextPosition = Question::where('id_quiz', $quiz->id_quiz)->max('order_position') + 1;
 
         return view('admin.GestionQuestion.create', compact('quiz', 'nextPosition'));
     }
 
     /**
-     * Sauvegarder une nouvelle question
+     * 💾 Enregistrer une nouvelle question
      */
     public function store(Request $request, Quiz $quiz)
     {
-        // Validation des données
         $validated = $request->validate([
             'question_text' => 'required|string|max:1000',
             'option_a' => 'required|string|max:255',
@@ -45,65 +45,47 @@ class QuestionAdminController extends Controller
             'option_c' => 'required|string|max:255',
             'option_d' => 'required|string|max:255',
             'correct_answer' => 'required|in:A,B,C,D',
-            'points' => 'required|numeric|min:0|max:100',
-            'order_position' => 'required|integer|min:1'
+            'points' => 'required|numeric|min:0.5|max:10',
+            'order_position' => 'nullable|integer|min:1',
         ]);
 
-        // Ajouter l'ID du quiz
+        // Définir les champs supplémentaires
         $validated['id_quiz'] = $quiz->id_quiz;
+        $validated['order_position'] = $validated['order_position']
+            ?? (Question::where('id_quiz', $quiz->id_quiz)->max('order_position') + 1);
 
         // Créer la question
         Question::create($validated);
 
-        // Vérifier si on veut ajouter une autre question
-        if ($request->input('action') === 'save_and_new') {
-            return redirect()
-                ->route('admin.question.create', $quiz)
-                ->with('success', 'Question créée avec succès ! Vous pouvez ajouter une autre question.');
-        }
-
+        // Redirection après succès
         return redirect()
-            ->route('admin.question.index', $quiz)
-            ->with('success', 'Question créée avec succès !');
+            ->route('admin.quiz.question.index', $quiz)
+            ->with('success', '✅ Nouvelle question ajoutée avec succès !');
     }
 
     /**
-     * Afficher une question spécifique
-     */
-    public function show(Quiz $quiz, Question $question)
-    {
-        // Vérifier que la question appartient bien au quiz
-        if ($question->id_quiz !== $quiz->id_quiz) {
-            abort(404);
-        }
-
-        return view('admin.GestionQuestion.show', compact('quiz', 'question'));
-    }
-
-    /**
-     * Formulaire d'édition d'une question
+     * ✏️ Formulaire d’édition d’une question existante
      */
     public function edit(Quiz $quiz, Question $question)
     {
-        // Vérifier que la question appartient bien au quiz
+        // Vérifier que la question appartient bien à ce quiz
         if ($question->id_quiz !== $quiz->id_quiz) {
-            abort(404);
+            abort(404, 'Cette question ne correspond pas à ce quiz.');
         }
 
         return view('admin.GestionQuestion.edit', compact('quiz', 'question'));
     }
 
     /**
-     * Mettre à jour une question
+     * 🔄 Mettre à jour une question existante
      */
     public function update(Request $request, Quiz $quiz, Question $question)
     {
-        // Vérifier que la question appartient bien au quiz
+        // Vérification d’appartenance
         if ($question->id_quiz !== $quiz->id_quiz) {
-            abort(404);
+            abort(404, 'Cette question ne correspond pas à ce quiz.');
         }
 
-        // Validation des données
         $validated = $request->validate([
             'question_text' => 'required|string|max:1000',
             'option_a' => 'required|string|max:255',
@@ -111,56 +93,38 @@ class QuestionAdminController extends Controller
             'option_c' => 'required|string|max:255',
             'option_d' => 'required|string|max:255',
             'correct_answer' => 'required|in:A,B,C,D',
-            'points' => 'required|numeric|min:0|max:100',
-            'order_position' => 'required|integer|min:1'
+            'points' => 'required|numeric|min:0.5|max:10',
+            'order_position' => 'required|integer|min:1',
         ]);
 
-        // Mettre à jour la question
         $question->update($validated);
 
         return redirect()
-            ->route('admin.question.index', $quiz)
-            ->with('success', 'Question mise à jour avec succès !');
+            ->route('admin.quiz.question.index', $quiz)
+            ->with('success', '✏️ Question mise à jour avec succès !');
+    }
+public function show(Quiz $quiz, Question $question)
+{
+    if ($question->id_quiz !== $quiz->id_quiz) {
+        abort(404, 'Cette question ne correspond pas à ce quiz.');
     }
 
+    return view('admin.GestionQuestion.show', compact('quiz', 'question'));
+}
+
     /**
-     * Supprimer une question
+     * 🗑️ Supprimer une question
      */
     public function destroy(Quiz $quiz, Question $question)
     {
-        // Vérifier que la question appartient bien au quiz
         if ($question->id_quiz !== $quiz->id_quiz) {
-            abort(404);
+            abort(404, 'Cette question ne correspond pas à ce quiz.');
         }
 
         $question->delete();
 
-        // Réorganiser les positions des questions restantes
-        $quiz->questions()
-             ->where('order_position', '>', $question->order_position)
-             ->decrement('order_position');
-
         return redirect()
-            ->route('admin.question.index', $quiz)
-            ->with('success', 'Question supprimée avec succès !');
-    }
-
-    /**
-     * Réorganiser l'ordre des questions (AJAX)
-     */
-    public function reorder(Request $request, Quiz $quiz)
-    {
-        $request->validate([
-            'questions' => 'required|array',
-            'questions.*' => 'exists:questions,id'
-        ]);
-
-        foreach ($request->questions as $position => $questionId) {
-            Question::where('id', $questionId)
-                   ->where('id_quiz', $quiz->id_quiz)
-                   ->update(['order_position' => $position + 1]);
-        }
-
-        return response()->json(['success' => true]);
+            ->route('admin.quiz.question.index', $quiz)
+            ->with('success', '🗑️ Question supprimée avec succès.');
     }
 }

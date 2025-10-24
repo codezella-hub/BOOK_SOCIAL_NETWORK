@@ -14,6 +14,49 @@
     --transition: all 0.3s ease;
     --border-radius: 8px;
 }
+html {
+  scroll-behavior: smooth;
+}
+/* Container must be relatively positioned */
+.user-dropdown {
+  position: relative;
+}
+
+/* Hide by default */
+.user-dropdown .user-dropdown-content {
+  position: absolute;
+  top: 60%; /* just below the avatar */
+  right: 0;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(5,7,9,.12);
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;     /* ignore clicks while hidden */
+  transition: opacity .15s ease, transform .15s ease;
+  z-index: 50;
+}
+
+/* Keep it open when hovering either the avatar OR the dropdown content */
+.user-dropdown:hover .user-dropdown-content,
+.user-dropdown:focus-within .user-dropdown-content {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;     /* allow clicking links */
+}
+
+/* Optional: make the avatar look clickable */
+.user-dropdown .user-avatar {
+  cursor: pointer;
+}
+
+
+.user-dropdown .user-dropdown-content::before {
+  content:"";
+  position:absolute; top:-8px; right:0; left:0; height:8px;
+}
 
 /* Reset et styles de base */
 * {
@@ -184,6 +227,25 @@ header {
 
 .nav-links a:hover::after {
     width: 100%;
+}
+
+/* Lien Assistant IA spécial */
+.nav-ai-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    padding: 8px 12px !important;
+    border-radius: 20px !important;
+    transition: all 0.3s ease !important;
+}
+
+.nav-ai-link:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+}
+
+.nav-ai-link::after {
+    display: none !important;
 }
 
 .dropdown {

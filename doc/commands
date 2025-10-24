@@ -2,7 +2,9 @@ php artisan db:create   // cree base donner
 
  php artisan migrate    // cree les tables
 
+
 php artisan db:seed --class=RoleSeeder
+
  php artisan db:seed --class=AdminUserSeeder // cree un admin
   Email: admin@socialbook.net
   Mot de passe: Admin123!

@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
+
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -140,4 +141,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
 
+    public function evenementsOrganized() {
+        return $this->hasMany(\App\Models\Evenement::class, 'user_id');
+    }
+
+    public function evenementsParticipating() {
+        return $this->belongsToMany(\App\Models\Evenement::class, 'evenement_user')
+            ->withPivot(['status','ticket_id'])
+            ->withTimestamps();
+    }
+
+    public function tickets() {
+        return $this->hasMany(\App\Models\Ticket::class);
+    }
 }
