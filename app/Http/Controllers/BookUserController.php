@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\BookTransactionHistory;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -178,7 +179,19 @@ class BookUserController extends Controller
             abort(403, 'Ce livre est privé.');
         }
 
-        $book->load(['category', 'user']);
+        $book->load(['category', 'user', 'feedbacks.user']);
+
+        // Vérifier le statut d'emprunt actuel
+        $currentBorrowStatus = null;
+        if (auth()->check()) {
+            $currentBorrow = BookTransactionHistory::where('book_id', $book->id)
+                ->where('borrower_id', auth()->id())
+                ->whereIn('status', ['pending', 'approved', 'borrowed'])
+                ->first();
+
+            $currentBorrowStatus = $currentBorrow ? $currentBorrow->status : null;
+        }
+
         $relatedBooks = Book::with(['category', 'user'])
             ->where('category_id', $book->category_id)
             ->where('id', '!=', $book->id)
@@ -188,7 +201,7 @@ class BookUserController extends Controller
             ->limit(4)
             ->get();
 
-        return view('user.books.showDetailsPublic', compact('book', 'relatedBooks'));
+        return view('user.books.showDetailsPublic', compact('book', 'relatedBooks', 'currentBorrowStatus'));
     }
 
     /**

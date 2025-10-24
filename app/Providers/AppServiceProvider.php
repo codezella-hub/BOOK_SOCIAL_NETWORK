@@ -60,4 +60,10 @@ class AppServiceProvider extends ServiceProvider
             }
         });
     }
+    protected $policies = [
+        Evenement::class => EvenementPolicy::class,
+    ];
+
+
+
 }

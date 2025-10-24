@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
-    @vite(['resources/css/app.css', 'resources/css/user.css'])
+ {{--  @vite(['resources/css/app.css', 'resources/css/user.css']) --}}
+  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/user.css') }}">
 
      <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -31,9 +33,9 @@
 <body>
 <!-- Bande de bienvenue -->
 <div class="welcome-bar">
-    <div class="container">
-        <p>Bienvenue sur Social Book Network - Partagez votre passion pour la lecture avec notre communauté !</p>
-    </div>
+  <div class="container">
+      <p>Bienvenue sur Social Book Network - Partagez votre passion pour la lecture avec notre communauté !</p>
+  </div>
 </div>
 
 <!-- Header -->
@@ -48,7 +50,7 @@
             <ul class="nav-links">
                 <li><a href="{{ route('user.home') }}"><i class="fas fa-home"></i> Accueil</a></li>
 
-                <li><a href=""><i class="fas fa-compass"></i> Découvrir</a></li>
+                    <li><a href="{{ route('books.index') }}"><i class="fas fa-compass"></i> Découvrir</a></li>
 
 
 
@@ -64,7 +66,7 @@
                     <div class="dropdown-content">
                         <a href="#"><i class="fas fa-blog"></i> Blog</a>
                         @auth
-                        <a href=""><i class="fas fa-book"></i> Mes Livres</a>
+                      <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
                        <a href="{{ route('user.quiz.index') }}"><i class="fas fa-book"></i> Quiz</a>
                         @endauth
                         <a href="/#events"><i class="fas fa-calendar"></i> Événements</a>
@@ -134,30 +136,30 @@
 
 <!-- Search Overlay -->
 <div class="search-overlay" id="search-overlay">
-    <div class="search-container">
-        <div class="search-header">
-            <h3>Rechercher des livres</h3>
-            <button class="close-search" id="close-search"><i class="fas fa-times"></i></button>
-        </div>
-        <form class="search-form">
-            <input type="text" placeholder="Titre, auteur, genre...">
-            <button type="submit"><i class="fas fa-search"></i></button>
-        </form>
-        <div class="search-results">
-            <div class="search-result-item">
-                <h4>L'Étranger</h4>
-                <p>Albert Camus • Roman • 1942</p>
-            </div>
-            <div class="search-result-item">
-                <h4>1984</h4>
-                <p>George Orwell • Science-fiction • 1949</p>
-            </div>
-            <div class="search-result-item">
-                <h4>Le Petit Prince</h4>
-                <p>Antoine de Saint-Exupéry • Conte • 1943</p>
-            </div>
-        </div>
-    </div>
+  <div class="search-container">
+      <div class="search-header">
+          <h3>Rechercher des livres</h3>
+          <button class="close-search" id="close-search"><i class="fas fa-times"></i></button>
+      </div>
+      <form class="search-form">
+          <input type="text" placeholder="Titre, auteur, genre...">
+          <button type="submit"><i class="fas fa-search"></i></button>
+      </form>
+      <div class="search-results">
+          <div class="search-result-item">
+              <h4>L'Étranger</h4>
+              <p>Albert Camus • Roman • 1942</p>
+          </div>
+          <div class="search-result-item">
+              <h4>1984</h4>
+              <p>George Orwell • Science-fiction • 1949</p>
+          </div>
+          <div class="search-result-item">
+              <h4>Le Petit Prince</h4>
+              <p>Antoine de Saint-Exupéry • Conte • 1943</p>
+          </div>
+      </div>
+  </div>
 </div>
 
 <!-- Notifications -->
@@ -198,60 +200,65 @@
 
 <!-- Contenu principal -->
 <main>
-    @yield('content')
+  @yield('content')
 </main>
 
 <!-- Footer -->
 <footer>
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-column">
-                <h3>Social Book</h3>
-                <p>La plateforme de partage de livres pour les passionnés de lecture.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="footer-column">
-                <h3>Liens rapides</h3>
-                <ul>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Accueil</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Découvrir</a></li>
-                    <li><a href="{{ route('user.posts.index') }}"><i class="fas fa-chevron-right"></i> Forum</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Communauté</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Blog</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Catégories</h3>
-                <ul>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Fiction</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Non-fiction</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Science-fiction</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Fantasy</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Polar</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Contact</h3>
-                <ul>
-                    <li><i class="fas fa-envelope"></i> contact@socialbook.net</li>
-                    <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
-                    <li><i class="fas fa-map-marker-alt"></i> 123 Rue des Livres, Paris</li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright">
-            <p>&copy; {{ date('Y') }} Social Book Network. Tous droits réservés.</p>
-        </div>
-    </div>
+  <div class="container">
+      <div class="footer-content">
+          <div class="footer-column">
+              <h3>Social Book</h3>
+              <p>La plateforme de partage de livres pour les passionnés de lecture.</p>
+              <div class="social-links">
+                  <a href="#"><i class="fab fa-facebook-f"></i></a>
+                  <a href="#"><i class="fab fa-twitter"></i></a>
+                  <a href="#"><i class="fab fa-instagram"></i></a>
+                  <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              </div>
+          </div>
+          <div class="footer-column">
+              <h3>Liens rapides</h3>
+              <ul>
+                  <li><a href="#"><i class="fas fa-chevron-right"></i> Accueil</a></li>
+                  <li><a href="#"><i class="fas fa-chevron-right"></i> Découvrir</a></li>
+                  <li><a href="{{ route('user.posts.index') }}"><i class="fas fa-chevron-right"></i> Forum</a></li>
+                  <li><a href="#"><i class="fas fa-chevron-right"></i> Communauté</a></li>
+                  <li><a href="{{ route('user.books.borrowing-history') }}"><i class="fas fa-chevron-right"></i> Borrowing history</a></li>
+                  <li><a href="{{ route('user.books.lending-requests') }}"><i class="fas fa-chevron-right"></i> lenting histroy</a></li>
+              </ul>
+          </div>
+          <div class="footer-column">
+              <h3>Catégories</h3>
+              <ul>
+                  <li><a href="#"><i class="fas fa-chevron-right"></i> Fiction</a></li>
+                  <li><a href="#"><i class="fas fa-chevron-right"></i> Non-fiction</a></li>
+                  <li><a href="#"><i class="fas fa-chevron-right"></i> Science-fiction</a></li>
+                  <li><a href="#"><i class="fas fa-chevron-right"></i> Fantasy</a></li>
+                  <li><a href="#"><i class="fas fa-chevron-right"></i> Polar</a></li>
+              </ul>
+          </div>
+          <div class="footer-column">
+              <h3>Contact</h3>
+              <ul>
+                  <li><i class="fas fa-envelope"></i> contact@socialbook.net</li>
+                  <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
+                  <li><i class="fas fa-map-marker-alt"></i> 123 Rue des Livres, Paris</li>
+              </ul>
+          </div>
+      </div>
+      <div class="copyright">
+          <p>&copy; {{ date('Y') }} Social Book Network. Tous droits réservés.</p>
+      </div>
+  </div>
 </footer>
 
-<!-- Scripts -->
-@vite(['resources/js/user.js'])
+<!-- JavaScript Section -->
+{{--@vite(['resources/js/user.js'])--}}
+<script src="{{ asset('js/user.js') }}"></script>
+<script>
+</script>
+
 @stack('scripts')
 @yield('scripts')
 

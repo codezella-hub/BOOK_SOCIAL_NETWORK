@@ -1,5 +1,4 @@
 @extends('layouts.user-layout')
-
 <style>
 /* Tabs */
 #events-tabs .tabs{
@@ -33,7 +32,6 @@
 #events-tabs .panel{ display:none; }
 #events-tabs .panel.is-active{ display:block; }
 </style>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.querySelector('#events-tabs');

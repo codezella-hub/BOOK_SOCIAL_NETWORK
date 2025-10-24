@@ -73,6 +73,7 @@
                     <span class="ef-label">Location</span>
                     <input class="ef-input" type="text" name="location_text" value="{{ old('location_text', $event->location_text ?? '') }}" placeholder="Address or 'Online'">
                 </label>
+<<<<<<< HEAD
                 <label class="ef-field">
   <span class="ef-label">Latitude</span>
   <input class="ef-input" type="text" name="lat" value="{{ old('lat', $event->lat ?? '') }}" placeholder="e.g. 36.860000">
@@ -94,6 +95,8 @@
 </div>
 
                 
+=======
+>>>>>>> gestionLivre
             </div>
         </div>
 

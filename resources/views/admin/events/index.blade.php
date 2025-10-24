@@ -165,11 +165,15 @@
     </div>
 
     <div style="margin-top:24px">
+<<<<<<< HEAD
         {{-- {{ $events->onEachSide(1)->links() }} --}}
         {{-- {{ $events->onEachSide(1)->links('pagination::tailwind') }} --}}
         {{ $events->onEachSide(1)->links('pagination::bootstrap-4') }}
 
 
+=======
+        {{ $events->onEachSide(1)->links() }}
+>>>>>>> gestionLivre
     </div>
     @endif
 </div>

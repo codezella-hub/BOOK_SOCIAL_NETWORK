@@ -253,9 +253,13 @@
             font-size: 0.9rem;
         }
 
-        /* Similar Books Section */
-        .similar-books {
-            margin-top: 50px;
+        /* Feedbacks Section */
+        .feedbacks-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
         }
 
         .section-header {
@@ -286,6 +290,200 @@
         .section-header p {
             color: var(--text-light);
             font-size: 1.1rem;
+        }
+
+        /* Rating Summary */
+        .rating-summary {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .average-rating {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .rating-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #ffc107;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .rating-stars {
+            margin-bottom: 15px;
+        }
+
+        .rating-count {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .rating-distribution {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rating-label {
+            width: 80px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .rating-progress {
+            flex: 1;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .rating-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #ffc107, #ffb300);
+            border-radius: 5px;
+            transition: width 1s ease-in-out;
+        }
+
+        .rating-percentage {
+            width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Feedback Cards */
+        .feedbacks-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .feedback-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .feedback-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .user-info h4 {
+            color: var(--primary-color);
+            margin-bottom: 2px;
+            font-size: 1rem;
+        }
+
+        .feedback-date {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        .feedback-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #ffc107;
+            font-size: 1.1rem;
+        }
+
+        .feedback-content {
+            color: var(--text-color);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feedback-sentiment {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .sentiment-positive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .sentiment-negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .sentiment-neutral {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Empty State for Feedbacks */
+        .empty-feedbacks {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-feedbacks i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--gray-light);
+        }
+
+        /* Similar Books Section */
+        .similar-books {
+            margin-top: 50px;
         }
 
         .similar-grid {
@@ -402,6 +600,11 @@
             .book-title {
                 font-size: 1.8rem;
             }
+
+            .rating-summary {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -427,6 +630,10 @@
                 justify-content: center;
                 text-align: center;
                 flex-direction: column;
+            }
+
+            .rating-number {
+                font-size: 3rem;
             }
         }
 
@@ -461,6 +668,10 @@
             .similar-grid {
                 grid-template-columns: 1fr;
             }
+
+            .feedbacks-section {
+                padding: 25px;
+            }
         }
 
         /* Animation */
@@ -475,14 +686,17 @@
             }
         }
 
-        .book-hero, .book-actions, .similar-books {
+        .book-hero, .book-actions, .feedbacks-section, .similar-books {
             animation: fadeInUp 0.6s ease-out;
         }
 
-        .similar-book-card {
+        .feedback-card, .similar-book-card {
             animation: fadeInUp 0.6s ease-out;
         }
 
+        .feedback-card:nth-child(1) { animation-delay: 0.1s; }
+        .feedback-card:nth-child(2) { animation-delay: 0.2s; }
+        .feedback-card:nth-child(3) { animation-delay: 0.3s; }
         .similar-book-card:nth-child(1) { animation-delay: 0.1s; }
         .similar-book-card:nth-child(2) { animation-delay: 0.2s; }
         .similar-book-card:nth-child(3) { animation-delay: 0.3s; }
@@ -564,20 +778,188 @@
             <!-- Book Actions -->
             <div class="book-actions">
                 <div class="action-buttons">
-                    <button class="btn-borrow"
-                            {{ !$book->shareable || $book->archived ? 'disabled' : '' }}
-                            onclick="borrowBook({{ $book->id }})">
-                        <i class="fas fa-hand-holding"></i>
-                        {{ !$book->shareable || $book->archived ? 'Non disponible' : 'Emprunter ce livre' }}
-                    </button>
+                    @auth
+                        @if($book->user_id != auth()->id())
+                            @if($currentBorrowStatus)
+                                @switch($currentBorrowStatus)
+                                    @case('pending')
+                                        <button class="btn-borrow" style="background: #f39c12;" disabled>
+                                            <i class="fas fa-clock"></i>
+                                            Demande en attente
+                                        </button>
+                                        @break
+                                    @case('approved')
+                                        <button class="btn-borrow" style="background: #3498db;" disabled>
+                                            <i class="fas fa-check-circle"></i>
+                                            Demande approuvée
+                                        </button>
+                                        @break
+                                    @case('borrowed')
+                                        <button class="btn-borrow" style="background: #9b59b6;" disabled>
+                                            <i class="fas fa-book-reader"></i>
+                                            Livre emprunté
+                                        </button>
+                                        @break
+                                @endswitch
+                            @else
+                                <form action="{{ route('user.books.borrow-request', $book) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="btn-borrow"
+                                        {{ !$book->shareable || $book->archived ? 'disabled' : '' }}>
+                                        <i class="fas fa-hand-holding"></i>
+                                        {{ !$book->shareable || $book->archived ? 'Non disponible' : 'Emprunter ce livre' }}
+                                    </button>
+                                </form>
+                            @endif
+                        @else
+                            <button class="btn-borrow" style="background: #95a5a6;" disabled>
+                                <i class="fas fa-user"></i>
+                                Votre propre livre
+                            </button>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="btn-borrow">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Connectez-vous pour emprunter
+                        </a>
+                    @endauth
 
                     <a href="{{ route('books.index') }}" class="btn-secondary">
                         <i class="fas fa-arrow-left"></i>
                         Retour à la bibliothèque
                     </a>
 
+                    @auth
+                        <!-- Liens vers les pages d'historique -->
+                        <a href="{{ route('user.books.borrowing-history') }}" class="btn-secondary">
+                            <i class="fas fa-history"></i>
+                            Mes emprunts
+                        </a>
 
+                        @if(auth()->user()->books()->count() > 0)
+                            <a href="{{ route('user.books.lending-requests') }}" class="btn-secondary">
+                                <i class="fas fa-hand-holding-heart"></i>
+                                Mes prêts
+                            </a>
+                        @endif
+                    @endauth
                 </div>
+            </div>
+
+            <!-- Feedbacks Section -->
+            <div class="feedbacks-section">
+                <div class="section-header">
+                    <h2>⭐ Avis des Lecteurs</h2>
+                    <p>Découvrez ce que les autres lecteurs pensent de ce livre</p>
+                </div>
+
+                @if($book->feedbacks->count() > 0)
+                    <!-- Rating Summary -->
+                    <div class="rating-summary">
+                        <div class="average-rating">
+                            <div class="rating-number">
+                                {{ number_format($book->averageRating(), 1) }}
+                            </div>
+                            <div class="rating-stars">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= floor($book->averageRating()))
+                                        <i class="fas fa-star star"></i>
+                                    @elseif($i - 0.5 <= $book->averageRating())
+                                        <i class="fas fa-star-half-alt star"></i>
+                                    @else
+                                        <i class="far fa-star star"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                            <div class="rating-count">
+                                {{ $book->feedbacks->count() }} avis
+                            </div>
+                        </div>
+
+                        <div class="rating-distribution">
+                            @php
+                                $ratingStats = $book->rating_stats;
+                            @endphp
+                            @for($i = 5; $i >= 1; $i--)
+                                <div class="rating-bar">
+                                    <div class="rating-label">
+                                        <span>{{ $i }}</span>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="rating-progress">
+                                        <div class="rating-fill" style="width: {{ $ratingStats['distribution_percent'][$i] ?? 0 }}%"></div>
+                                    </div>
+                                    <div class="rating-percentage">
+                                        {{ $ratingStats['distribution'][$i] ?? 0 }}
+                                    </div>
+                                </div>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <!-- Feedbacks List -->
+                    <div class="feedbacks-grid">
+                        @foreach($book->feedbacks->take(5) as $feedback)
+                            <div class="feedback-card">
+                                <div class="feedback-header">
+                                    <div class="feedback-user">
+                                        <div class="user-avatar">
+                                            {{ substr($feedback->user->name, 0, 1) }}
+                                        </div>
+                                        <div class="user-info">
+                                            <h4>{{ $feedback->user->name }}</h4>
+                                            <div class="feedback-date">
+                                                {{ $feedback->created_at->diffForHumans() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="feedback-rating">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= $feedback->rating)
+                                                <i class="fas fa-star star"></i>
+                                            @else
+                                                <i class="far fa-star star"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                </div>
+                                <div class="feedback-content">
+                                    {{ $feedback->comment }}
+                                </div>
+                                @if($feedback->sentiment)
+                                    <span class="feedback-sentiment sentiment-{{ $feedback->sentiment }}">
+                                        <i class="fas {{ $feedback->sentiment === 'positive' ? 'fa-smile' : ($feedback->sentiment === 'negative' ? 'fa-frown' : 'fa-meh') }}"></i>
+                                        {{ $feedback->sentiment === 'positive' ? 'Positif' : ($feedback->sentiment === 'negative' ? 'Négatif' : 'Neutre') }}
+                                    </span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if($book->feedbacks->count() > 5)
+                        <div class="text-center mt-4">
+                            <a href="{{ route('books.feedbacks', $book) }}" class="btn-secondary">
+                                <i class="fas fa-comments"></i>
+                                Voir tous les avis ({{ $book->feedbacks->count() }})
+                            </a>
+                        </div>
+                    @endif
+
+                @else
+                    <div class="empty-feedbacks">
+                        <i class="fas fa-comments"></i>
+                        <h3>Aucun avis pour le moment</h3>
+                        <p>Soyez le premier à donner votre avis sur ce livre !</p>
+                        @auth
+                            @if($book->user_id != auth()->id())
+                                <a href="{{ route('user.books.borrowing-history') }}" class="btn-secondary mt-3">
+                                    <i class="fas fa-history"></i>
+                                    Empruntez ce livre pour donner votre avis
+                                </a>
+                            @endif
+                        @endauth
+                    </div>
+                @endif
             </div>
 
             <!-- Similar Books Section -->
@@ -646,31 +1028,6 @@
     </div>
 
     <script>
-        import Swal from "sweetalert2";
-
-        function borrowBook(bookId) {
-            // Simulation de la fonction d'emprunt
-            Swal.fire({
-                title: 'Emprunter ce livre ?',
-                text: 'Voulez-vous vraiment emprunter ce livre ?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#27ae60',
-                cancelButtonColor: '#e74c3c',
-                confirmButtonText: 'Oui, emprunter',
-                cancelButtonText: 'Annuler'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Ici vous pouvez ajouter la logique d'emprunt
-                    Swal.fire(
-                        'Succès !',
-                        'Votre demande d\'emprunt a été envoyée.',
-                        'success'
-                    );
-                }
-            });
-        }
-
         // Animation au scroll
         document.addEventListener('DOMContentLoaded', function() {
             const observerOptions = {
@@ -688,11 +1045,20 @@
             }, observerOptions);
 
             // Observer les éléments à animer
-            document.querySelectorAll('.similar-book-card').forEach(card => {
+            document.querySelectorAll('.feedback-card, .similar-book-card').forEach(card => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(30px)';
                 card.style.transition = 'all 0.6s ease-out';
                 observer.observe(card);
+            });
+
+            // Animation des barres de progression
+            document.querySelectorAll('.rating-fill').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
             });
         });
     </script>
