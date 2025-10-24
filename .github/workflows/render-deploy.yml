@@ -18,36 +18,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Important pour SonarCloud
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, curl, json, dom
-          tools: composer
-
-      - name: Cache Composer packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.composer/cache
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
-
-      - name: Install dependencies
-        run: |
-          composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader
+          fetch-depth: 0
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.ci.autoConfig=true
+            -Dsonar.scm.disabled=true
 
   build-and-deploy:
     runs-on: ubuntu-latest
-    needs: sonarqube  # Attendre l'analyse SonarQube
+    needs: sonarqube
     permissions:
       contents: read
       packages: write
