@@ -131,7 +131,7 @@ public function index(Request $request)
 
     public function show(Evenement $event)
     {
-        $this->authorize('view', $event);
+       // $this->authorize('view', $event);
 
         $event->load('organizer');
 

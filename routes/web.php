@@ -125,7 +125,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::delete('/{report}/ignore', [ForumAdminController::class, 'ignore'])->name('ignore');
     });
 
-        
+
 });
 
 /*
@@ -133,8 +133,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 | FRONT UTILISATEURS
 |--------------------------------------------------------------------------
 */
+Route::get('/', [HomeController::class, 'home'])->name('user.home');
 Route::name('user.')->group(function () {
-    Route::get('/', [HomeController::class, 'home'])->name('home');
+
 
     // Quiz utilisateur
     Route::prefix('quiz')->name('quiz.')->group(function () {
@@ -164,61 +165,70 @@ Route::prefix('forum')->name('posts.')->group(function () {
         ->name('update');
     Route::delete('/posts/{post}', [ForumUserController::class, 'destroy'])->name('destroy');
 });
+// === COMMENTS ===
+    Route::prefix('forum')->name('comments.')->group(function () {
+        Route::post('/posts/{post}/comments', [ForumUserController::class, 'storeComment'])
+            ->middleware('moderate')
+            ->name('store');
+        Route::get('/comments/{comment}/edit', [ForumUserController::class, 'editComment'])->name('edit');
+        Route::put('/comments/{comment}', [ForumUserController::class, 'updateComment'])
+            ->middleware('moderate')
+            ->name('update');
+        Route::delete('/comments/{comment}', [ForumUserController::class, 'destroyComment'])->name('destroy');
+        Route::post('/comments/{comment}/replies', [ForumUserController::class, 'storeReply'])
+            ->middleware('moderate')
+            ->name('reply.store');
+    });
 
+
+// === LIKES ===
+    Route::prefix('forum')->name('likes.')->group(function () {
+        Route::post('/posts/{post}/like', [ForumUserController::class, 'toggle'])->name('toggle');
+        Route::get('/posts/{post}/check-like', [ForumUserController::class, 'checkLike'])->name('check');
+    });
+
+// === COMMENT LIKES ===
+    Route::prefix('forum')->name('comment_likes.')->group(function () {
+        Route::post('/comments/{comment}/like', [ForumUserController::class, 'toggleCommentLike'])
+            ->name('toggle');            // user.comment_likes.toggle
+        Route::get('/comments/{comment}/check-like', [ForumUserController::class, 'checkCommentLike'])
+            ->name('check');             // user.comment_likes.check
+    });
+
+
+// === REPORTS ===
+    Route::prefix('forum')->name('reports.')->group(function () {
+        Route::post('/posts/{post}/report', [ForumUserController::class, 'storeReport'])->name('store');
+        Route::get('/posts/{post}/check-report', [ForumUserController::class, 'checkReport'])->name('check');
+    });
+});
 /*
 |--------------------------------------------------------------------------
 | LIVRES UTILISATEURS
 |--------------------------------------------------------------------------
 */
+
+
+// Public books routes
 Route::get('/books', [BookUserController::class, 'index'])->name('books.index');
 Route::get('/books/{book}', [BookUserController::class, 'show'])->name('books.show');
-
-// "Mes livres" utilisateur (auth)
+Route::get('/books1/{book}', [BookUserController::class, 'show1'])->name('books.showDetailsPublic');
+// Authenticated user book routes
 Route::middleware('auth')->group(function () {
-    Route::resource('my-books', BookUserController::class)->names('user.books');
+    Route::get('/my-books', [BookUserController::class, 'myBooks'])->name('user.books.my-books');
+    Route::get('/my-books/create', [BookUserController::class, 'create'])->name('user.books.create');
+    Route::post('/my-books', [BookUserController::class, 'store'])->name('user.books.store');
+    Route::get('/my-books/{book}/edit', [BookUserController::class, 'edit'])->name('user.books.edit');
+    Route::put('/my-books/{book}', [BookUserController::class, 'update'])->name('user.books.update');
+    Route::delete('/my-books/{book}', [BookUserController::class, 'destroy'])->name('user.books.destroy');
     Route::patch('/my-books/{book}/toggle-shareable', [BookUserController::class, 'toggleShareable'])->name('user.books.toggle-shareable');
     Route::patch('/my-books/{book}/toggle-archive', [BookUserController::class, 'toggleArchive'])->name('user.books.toggle-archive');
 });
 
 
-// === COMMENTS ===
-Route::prefix('forum')->name('comments.')->group(function () {
-    Route::post('/posts/{post}/comments', [ForumUserController::class, 'storeComment'])
-        ->middleware('moderate')
-        ->name('store');
-    Route::get('/comments/{comment}/edit', [ForumUserController::class, 'editComment'])->name('edit');
-    Route::put('/comments/{comment}', [ForumUserController::class, 'updateComment'])
-        ->middleware('moderate')
-        ->name('update');
-    Route::delete('/comments/{comment}', [ForumUserController::class, 'destroyComment'])->name('destroy');
-    Route::post('/comments/{comment}/replies', [ForumUserController::class, 'storeReply'])
-        ->middleware('moderate')
-        ->name('reply.store');
-});
 
 
-// === LIKES ===
-Route::prefix('forum')->name('likes.')->group(function () {
-    Route::post('/posts/{post}/like', [ForumUserController::class, 'toggle'])->name('toggle');
-    Route::get('/posts/{post}/check-like', [ForumUserController::class, 'checkLike'])->name('check');
-});
 
-// === COMMENT LIKES ===
-Route::prefix('forum')->name('comment_likes.')->group(function () {
-    Route::post('/comments/{comment}/like', [ForumUserController::class, 'toggleCommentLike'])
-        ->name('toggle');            // user.comment_likes.toggle
-    Route::get('/comments/{comment}/check-like', [ForumUserController::class, 'checkCommentLike'])
-        ->name('check');             // user.comment_likes.check
-});
-
-
-// === REPORTS ===
-Route::prefix('forum')->name('reports.')->group(function () {
-    Route::post('/posts/{post}/report', [ForumUserController::class, 'storeReport'])->name('store');
-    Route::get('/posts/{post}/check-report', [ForumUserController::class, 'checkReport'])->name('check');
-});
-
-});
 
 Route::post('/moderate/live', function (Request $request, ContentModerator $moderator) {
     $validated = $request->validate([

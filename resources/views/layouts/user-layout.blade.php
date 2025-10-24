@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="{{ asset('css/user.css') }}">
 
      <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 
     <!-- CSS Section -->
     <!-- Alpine.js -->

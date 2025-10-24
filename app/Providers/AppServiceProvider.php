@@ -28,13 +28,13 @@ class AppServiceProvider extends ServiceProvider
         View::composer(['layouts.admin-layout', 'admin.*'], function ($view) {
             if (Auth::check()) {
                 $user = Auth::user();
-                
+
                 // Vérifier si l'utilisateur est admin en utilisant une requête directe
                 $isAdmin = \Spatie\Permission\Models\Role::where('name', 'admin')
                     ->whereHas('users', function($query) use ($user) {
                         $query->where('users.id', $user->id);
                     })->exists();
-                
+
                 if ($isAdmin) {
                     // Récupérer les notifications directement depuis la table
                     $notifications = DatabaseNotification::where('notifiable_id', $user->id)
@@ -60,10 +60,4 @@ class AppServiceProvider extends ServiceProvider
             }
         });
     }
-    protected $policies = [
-        Evenement::class => EvenementPolicy::class,
-    ];
-
-
-
 }
