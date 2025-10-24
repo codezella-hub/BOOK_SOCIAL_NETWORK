@@ -1,5 +1,31 @@
 # 📚 Book Social Network  
+## 🎯 Qualité du Code
 
+![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=alert_status)
+![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=coverage)
+![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=bugs)
+![SonarCloud Code Smells](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=code_smells)
+![SonarCloud Security Rating](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=security_rating)
+![SonarCloud Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=sqale_rating)
+![SonarCloud Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=reliability_rating)
+
+## 📊 Métriques Détaillées
+
+| Métrique | Statut | Description |
+|----------|--------|-------------|
+| **Qualité globale** | ![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=alert_status) | Statut du contrôle qualité |
+| **Fiabilité** | ![Reliability](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=reliability_rating) | Aucun bug détecté |
+| **Sécurité** | ![Security](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=security_rating) | Aucune vulnérabilité de sécurité |
+| **Maintenabilité** | ![Maintainability](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=sqale_rating) | Facilité de maintenance du code |
+| **Dette technique** | ![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=sqale_index) | Temps estimé pour corriger les problèmes |
+| **Couverture** | ![Coverage](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=coverage) | Pourcentage de code couvert par les tests |
+| **Lignes de code** | ![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=codezella-hub_BOOK_SOCIAL_NETWORK&metric=ncloc) | Nombre total de lignes de code |
+
+## 🔍 Analyse en Temps Réel
+
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=codezella-hub_BOOK_SOCIAL_NETWORK)
+
+**📈 Voir le rapport complet :** [SonarCloud Dashboard](https://sonarcloud.io/summary/new_code?id=codezella-hub_BOOK_SOCIAL_NETWORK)
 ## Docker (dev)
 
 Prerequisites: Docker Desktop.
