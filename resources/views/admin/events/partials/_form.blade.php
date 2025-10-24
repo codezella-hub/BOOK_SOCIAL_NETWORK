@@ -95,8 +95,7 @@
 </div>
 
 
-=======
->>>>>>> gestionLivre
+
             </div>
         </div>
 
