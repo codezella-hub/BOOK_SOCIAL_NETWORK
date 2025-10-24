@@ -16,7 +16,7 @@
         </div>
 
         <div class="form-container">
-            <form action="{{ route('admin.books.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.books.store') }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
 
                 <div class="form-grid">

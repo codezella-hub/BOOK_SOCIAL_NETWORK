@@ -12,7 +12,7 @@
             </a>
         </div>
 
-        <form action="{{ route('admin.categories.update', $category) }}" method="POST">
+        <form action="{{ route('admin.categories.update', $category) }}" method="POST" novalidate>
             @csrf
             @method('PUT')
 

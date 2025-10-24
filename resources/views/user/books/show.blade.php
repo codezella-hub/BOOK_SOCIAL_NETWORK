@@ -312,6 +312,29 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .book-success-indicators {
+            border-top: 1px solid #f0f0f0;
+            padding-top: 8px;
+        }
+
+        .related-book-card {
+            position: relative;
+        }
+
+        .related-book-card::before {
+            content: '🔥 Populaire';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 2;
+        }
     </style>
 @endsection
 
@@ -430,9 +453,10 @@
                 </div>
 
                 <!-- Related Books -->
+                <!-- Related Books -->
                 @if($relatedBooks->count() > 0)
                     <div class="related-books">
-                        <h2 class="section-title">Livres similaires</h2>
+                        <h2 class="section-title">Livres populaires similaires</h2>
                         <div class="related-grid">
                             @foreach($relatedBooks as $relatedBook)
                                 <a href="{{ route('books.show', $relatedBook) }}" class="related-book-card">
@@ -450,6 +474,37 @@
                                     <div class="related-book-info">
                                         <h4 class="related-book-title">{{ Str::limit($relatedBook->title, 40) }}</h4>
                                         <p class="related-book-author">{{ $relatedBook->author_name }}</p>
+
+                                        <!-- Indicateurs de succès -->
+                                        <div class="book-success-indicators" style="margin-top: 8px; font-size: 0.75rem;">
+                                            <!-- Note moyenne -->
+                                            @if($relatedBook->avg_rating)
+                                                <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 2px;">
+                                    <span style="color: #ffc107;">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="fas fa-star{{ $i <= round($relatedBook->avg_rating) ? '' : '-o' }}"></i>
+                                        @endfor
+                                    </span>
+                                                    <span style="color: #6c757d;">({{ number_format($relatedBook->avg_rating, 1) }})</span>
+                                                </div>
+                                            @endif
+
+                                            <!-- Nombre de transactions -->
+                                            @if($relatedBook->transactions_count > 0)
+                                                <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 2px;">
+                                                    <i class="fas fa-exchange-alt" style="color: #28a745;"></i>
+                                                    <span style="color: #6c757d;">{{ $relatedBook->transactions_count }} emprunts</span>
+                                                </div>
+                                            @endif
+
+                                            <!-- Sentiment positif -->
+                                            @if($relatedBook->positive_feedbacks_count > 0)
+                                                <div style="display: flex; align-items: center; gap: 4px;">
+                                                    <i class="fas fa-smile" style="color: #28a745;"></i>
+                                                    <span style="color: #6c757d;">{{ $relatedBook->positive_feedbacks_count }} avis positifs</span>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </a>
                             @endforeach

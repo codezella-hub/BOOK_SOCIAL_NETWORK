@@ -12,7 +12,7 @@
             </a>
         </div>
 
-        <form action="{{ route('admin.categories.store') }}" method="POST">
+        <form action="{{ route('admin.categories.store') }}" method="POST" novalidate>
             @csrf
 
             <div class="form-group">

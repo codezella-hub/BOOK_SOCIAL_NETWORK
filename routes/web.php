@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 
@@ -36,10 +37,15 @@ use App\Services\ContentModerator;
 | ADMIN
 |--------------------------------------------------------------------------
 */
+
+Route::get('/admin', function () {
+    return redirect()->route('admin.dashboard1');
+});
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     // Tableau de bord
-    Route::get('/', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
-
+  //  Route::get('/', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard1', [DashboardController::class, 'index'])->name('dashboard1');
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'getStatsData'])->name('dashboard.chart-data');
     Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/notifications/{notification}/read', [AdminDashboardController::class, 'markNotificationAsRead'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [AdminDashboardController::class, 'markAllAsRead'])->name('notifications.markAllRead');

@@ -20,6 +20,85 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <style>
         /* Animation pour les nouvelles notifications */
+        .admin-brand {
+            padding: 20px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .brand-logo:hover {
+            transform: translateY(-2px);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo-main {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fff 0%, #e3f2fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-subtitle {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* Compact version for mobile */
+        @media (max-width: 768px) {
+            .brand-logo {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .logo-text {
+                align-items: center;
+            }
+
+            .logo-main {
+                font-size: 1rem;
+            }
+
+            .logo-subtitle {
+                font-size: 0.65rem;
+            }
+        }
+
         .notification-badge {
             transition: all 0.3s ease;
             position: absolute;
@@ -186,14 +265,22 @@
     <!-- Sidebar -->
     <div class="admin-sidebar">
         <div class="admin-brand">
-            <span>Admin Panel</span>
+            <a href="#" class="brand-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="logo-text">
+                    <div class="logo-main">BookSocial</div>
+                    <div class="logo-subtitle">NETWORK</div>
+                </div>
+            </a>
         </div>
         <!-- Dans votre sidebar, remplacez une des sections par : -->
 
 
         <ul class="admin-menu">
             <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <a href="{{ route('admin.dashboard') }}">
+                <a href="{{ route('admin.dashboard1') }}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
@@ -210,18 +297,8 @@
                     <span>Remises</span>
                 </a>
             </li>
-            <li class="#">
-                <a href="#">
-                    <i class="fas fa-book"></i>
-                    <span>Books</span>
-                </a>
-            </li>
-            <li class="#">
-                <a href="#">
-                    <i class="fas fa-users"></i>
-                    <span>Users</span>
-                </a>
-            </li>
+
+
 
             <li class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.categories.index') }}">
@@ -235,10 +312,7 @@
                     <i class="fas fa-book"></i>
                     <span>Books</span>
 
-           <li class="{{ request()->routeIs('admin.forum.*') ? 'active' : '' }}">
 
-
-</li>
 <li class="{{ request()->routeIs('admin.topics.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.topics.index') }}">
                     <i class="fas fa-comments"></i>
@@ -247,20 +321,14 @@
             </li>
 
 
-            </li>
+
             <li class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.reports.index') }}">
                     <i class="fas fa-flag"></i>
                     <span>Reports Management</span>
                 </a>
             </li>
-            <li class="#">
-                <a href="#">
-                    <i class="fas fa-comments"></i>
-                    <span>Reviews</span>
 
-                </a>
-            </li>
             {{-- <li class="#">
                 <flux:navlist.item icon="calendar" :href="route('admin.events.index')" :current="request()->routeIs('admin.events.*')" wire:navigate>Events1</flux:navlist.item>
             </li> --}}

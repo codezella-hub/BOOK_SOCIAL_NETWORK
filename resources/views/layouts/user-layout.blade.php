@@ -55,7 +55,7 @@
 
 
                 <li><a href="{{ route('user.posts.index') }}"><i class="fas fa-comments"></i> Forum</a></li>
-                <li><a href="#"><i class="fas fa-users"></i> Communauté</a></li>
+
 
                 @auth
                     <li><a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Donations</a></li>
@@ -68,6 +68,8 @@
                         @auth
                       <a href="{{ route('user.books.my-books') }}"><i class="fas fa-book"></i> Mes Livres</a>
                        <a href="{{ route('user.quiz.index') }}"><i class="fas fa-book"></i> Quiz</a>
+                           <a href="{{ route('user.books.borrowing-history') }}"><i class="fas fa-book"></i> Mes emprunts</a>
+                           <a href="{{ route('user.books.lending-requests') }}"><i class="fas fa-book"></i> Mes Prêts</a>
                         @endauth
                         <a href="/#events"><i class="fas fa-calendar"></i> Événements</a>
                         <a href="#"><i class="fas fa-question-circle"></i> Aide</a>
@@ -82,10 +84,7 @@
                 </div>
 
                 @auth
-                    <div class="icon-btn" id="notification-btn">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
+
 
                     <!-- Utilisateur connecté -->
                     <div class="user-dropdown">
@@ -95,10 +94,10 @@
                         <div class="user-dropdown-content">
                             <a href="{{ route('profile.edit') }}"><i class="fas fa-user-circle"></i> Mon Profil</a>
                             <a href="{{ route('user.donations.index') }}"><i class="fas fa-heart"></i> Mes Donations</a>
-                            <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
+
 
                             @if(auth()->user()->hasRole('admin'))
-                                <a href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Admin Panel</a>
+                                <a href="{{ route('admin.dashboard1') }}"><i class="fas fa-tachometer-alt"></i> Admin Panel</a>
                             @endif
 
                             <a href="{{ route('user.quiz.history') }}">

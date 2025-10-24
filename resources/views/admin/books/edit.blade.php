@@ -16,7 +16,7 @@
         </div>
 
         <div class="form-container">
-            <form action="{{ route('admin.books.update', $book) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.books.update', $book) }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 @method('PUT')
 

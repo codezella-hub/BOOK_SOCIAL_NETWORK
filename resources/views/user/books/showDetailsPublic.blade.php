@@ -13,7 +13,36 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+        /* Styles pour les badges de succès */
+        .success-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 2;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #8b6914;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
 
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Niveaux de succès */
+        .badge-excellent { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .badge-very-good { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+        .badge-good { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
+        .badge-average { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: white; }
         /* Book Hero Section */
         .book-hero {
             display: grid;
@@ -963,16 +992,35 @@
             </div>
 
             <!-- Similar Books Section -->
+            <!-- Similar Books Section -->
             @if($relatedBooks->count() > 0)
                 <div class="similar-books">
                     <div class="section-header">
-                        <h2>📚 Livres Similaires</h2>
-                        <p>Découvrez d'autres livres de la même catégorie</p>
+                        <h2>🏆 Livres Populaires Similaires</h2>
+                        <p>Découvrez les livres les plus appréciés de la même catégorie</p>
                     </div>
 
                     <div class="similar-grid">
                         @foreach($relatedBooks as $relatedBook)
                             <div class="similar-book-card">
+                                <!-- Badge de succès -->
+                                <div style="position: absolute; top: 10px; right: 10px; z-index: 2;">
+                                    @php
+                                        $successLevel = $relatedBook->success_level ?? 'good';
+                                        $badgeConfig = [
+                                            'excellent' => ['color' => '#27ae60', 'text' => '⭐ Excellent', 'icon' => 'fa-trophy'],
+                                            'very-good' => ['color' => '#3498db', 'text' => '🔥 Très bon', 'icon' => 'fa-fire'],
+                                            'good' => ['color' => '#f39c12', 'text' => '👍 Bon', 'icon' => 'fa-thumbs-up'],
+                                            'average' => ['color' => '#95a5a6', 'text' => '📚 Populaire', 'icon' => 'fa-book'],
+                                        ];
+                                        $badge = $badgeConfig[$successLevel] ?? $badgeConfig['good'];
+                                    @endphp
+                                    <span style="background: {{ $badge['color'] }}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                            <i class="fas {{ $badge['icon'] }}"></i>
+                            {{ $badge['text'] }}
+                        </span>
+                                </div>
+
                                 <div class="similar-book-cover">
                                     @if($relatedBook->book_cover)
                                         <img src="{{ Storage::disk('public')->url($relatedBook->book_cover) }}"
@@ -985,18 +1033,61 @@
                                     @endif
                                 </div>
                                 <div class="similar-book-info">
-                                    <span style="background: var(--light-color); color: var(--text-light); padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 500; display: inline-block; margin-bottom: 8px;">
-                                        {{ $relatedBook->category->name }}
-                                    </span>
+                        <span style="background: var(--light-color); color: var(--text-light); padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 500; display: inline-block; margin-bottom: 8px;">
+                            {{ $relatedBook->category->name }}
+                        </span>
                                     <h3 class="similar-book-title">{{ $relatedBook->title }}</h3>
                                     <p class="similar-book-author">
                                         <i class="fas fa-user-edit"></i>
                                         {{ $relatedBook->author_name }}
                                     </p>
-                                    <div class="similar-book-actions">
-                                        <span style="font-size: 0.8rem; color: var(--text-light);">
-                                            Par {{ $relatedBook->user->name }}
+
+                                    <!-- Indicateurs de performance -->
+                                    <div style="margin: 12px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                                        <!-- Note moyenne -->
+                                        @if($relatedBook->avg_rating)
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                                <span style="font-size: 0.8rem; color: #6c757d;">Note:</span>
+                                                <div style="display: flex; align-items: center; gap: 4px;">
+                                        <span style="color: #ffc107; font-size: 0.8rem;">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star{{ $i <= round($relatedBook->avg_rating) ? '' : '-o' }}"></i>
+                                            @endfor
                                         </span>
+                                                    <span style="font-size: 0.8rem; font-weight: 600; color: #2c3e50;">
+                                            {{ number_format($relatedBook->avg_rating, 1) }}
+                                        </span>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <!-- Transactions -->
+                                        @if($relatedBook->transactions_count > 0)
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                                <span style="font-size: 0.8rem; color: #6c757d;">Emprunts:</span>
+                                                <span style="font-size: 0.8rem; font-weight: 600; color: #27ae60;">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        {{ $relatedBook->transactions_count }}
+                                    </span>
+                                            </div>
+                                        @endif
+
+                                        <!-- Avis positifs -->
+                                        @if($relatedBook->positive_feedbacks_count > 0)
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <span style="font-size: 0.8rem; color: #6c757d;">Avis positifs:</span>
+                                                <span style="font-size: 0.8rem; font-weight: 600; color: #3498db;">
+                                        <i class="fas fa-smile"></i>
+                                        {{ $relatedBook->positive_feedbacks_count }}
+                                    </span>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="similar-book-actions">
+                            <span style="font-size: 0.8rem; color: var(--text-light);">
+                                Par {{ $relatedBook->user->name }}
+                            </span>
                                         <a href="{{ route('books.show', $relatedBook) }}" class="btn-view">
                                             <i class="fas fa-eye"></i>
                                             Voir
@@ -1015,7 +1106,7 @@
                     </div>
                     <div class="empty-similar">
                         <i class="fas fa-book-open"></i>
-                        <h3>Aucun livre similaire trouvé</h3>
+                        <h3>Aucun livre populaire similaire trouvé</h3>
                         <p>Explorez d'autres catégories pour découvrir plus de livres</p>
                         <a href="{{ route('books.index') }}" class="btn-secondary" style="margin-top: 15px;">
                             <i class="fas fa-search"></i>

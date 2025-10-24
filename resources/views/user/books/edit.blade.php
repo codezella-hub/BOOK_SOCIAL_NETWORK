@@ -292,7 +292,7 @@
 
             <!-- Form Container -->
             <div class="form-container">
-                <form action="{{ route('user.books.update', $book) }}" method="POST" enctype="multipart/form-data" id="bookForm">
+                <form action="{{ route('user.books.update', $book) }}" method="POST" enctype="multipart/form-data" id="bookForm" novalidate>
                     @csrf
                     @method('PUT')
 

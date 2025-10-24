@@ -158,12 +158,22 @@ class BookUserController extends Controller
         }
 
         $book->load(['category', 'user']);
+
+        // Livres les plus "succès" : haute note + sentiment positif + beaucoup de transactions
         $relatedBooks = Book::with(['category', 'user'])
             ->where('category_id', $book->category_id)
             ->where('id', '!=', $book->id)
             ->where('shareable', true)
             ->where('archived', false)
-            ->inRandomOrder()
+            ->withCount(['transactionHistories as transactions_count'])
+            ->withCount(['feedbacks as positive_feedbacks_count' => function($query) {
+                $query->where('sentiment', 'positive');
+            }])
+            ->withAvg('feedbacks as avg_rating', 'rating')
+            ->having('avg_rating', '>=', 3.5) // Au moins 3.5/5
+            ->orderBy('avg_rating', 'desc')
+            ->orderBy('positive_feedbacks_count', 'desc')
+            ->orderBy('transactions_count', 'desc')
             ->limit(4)
             ->get();
 
@@ -192,12 +202,22 @@ class BookUserController extends Controller
             $currentBorrowStatus = $currentBorrow ? $currentBorrow->status : null;
         }
 
+        // Livres similaires les plus "succès" : haute note + sentiment positif + beaucoup de transactions
         $relatedBooks = Book::with(['category', 'user'])
             ->where('category_id', $book->category_id)
             ->where('id', '!=', $book->id)
             ->where('shareable', true)
             ->where('archived', false)
-            ->inRandomOrder()
+            ->withCount(['transactionHistories as transactions_count'])
+            ->withCount(['feedbacks as positive_feedbacks_count' => function($query) {
+                $query->where('sentiment', 'positive');
+            }])
+            ->withCount(['feedbacks as total_feedbacks_count'])
+            ->withAvg('feedbacks as avg_rating', 'rating')
+            ->having('avg_rating', '>=', 3.0) // Au moins 3.0/5
+            ->orderBy('avg_rating', 'desc')
+            ->orderBy('positive_feedbacks_count', 'desc')
+            ->orderBy('transactions_count', 'desc')
             ->limit(4)
             ->get();
 
