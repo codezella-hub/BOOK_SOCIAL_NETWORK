@@ -82,7 +82,7 @@ RUN echo 'fi' >> /entrypoint.sh
 RUN echo '' >> /entrypoint.sh
 RUN echo '# Forcer l environnement de production pour Vite' >> /entrypoint.sh
 RUN echo 'sed -i "s/^APP_ENV=.*/APP_ENV=production/" .env' >> /entrypoint.sh
-RUN echo 'sed -i "s/^APP_DEBUG=.*/APP_DEBUG=false/" .env' >> /entrypoint.sh
+RUN echo 'sed -i "s/^APP_DEBUG=.*/APP_DEBUG=true/" .env' >> /entrypoint.sh
 RUN echo '' >> /entrypoint.sh
 RUN echo '# Optimiser Laravel' >> /entrypoint.sh
 RUN echo 'php artisan config:clear' >> /entrypoint.sh
